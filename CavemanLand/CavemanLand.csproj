@@ -27,11 +27,16 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Plant.cs" />
-    <Compile Include="Animal.cs" />
+    <Compile Include="Models\Animal.cs" />
+    <Compile Include="Models\Plant.cs" />
+    <Compile Include="Controllers\WorldController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
