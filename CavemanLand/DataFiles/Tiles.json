@@ -1,0 +1,55 @@
+{
+	"tile": {
+		"coor": [0, 0],
+		"terrain": {
+			"elevation": 0.0,
+			"oceanPercent": 0.0,
+			"hillPercent": 0.0
+		},
+		"temperature": {
+			"high": 70,
+			"low": 20,
+			"summerLength": 60,
+			"variance": 0.0,
+			"dailyTemps": {
+				"year": 0,
+				"temps": [0, 1, 2, 3]
+			}
+		},
+		"precipitation": {
+			"humidity": [0.0, 1.0, 2.0],
+			"dailyRain": {
+				"year": 0,
+				"precip": [0, 1, 2, 3],
+				"snowCover": [0, 1, 2, 3]
+			}
+		},
+		"rivers": {
+			"flowDirection": "up",
+			"upstreamDirections": ["up", "down"],
+			"flowRate": 0.0,
+			"dailyVolume": {
+				"year": 0,
+				"volume": [0, 1, 2, 3]
+			}
+		},
+		"habitats": {
+			"typePercents": [0, 1, 2, 3],
+			"currentLevel": [0, 1, 2, 3],
+			"game": {
+				"currentLevel": [0, 1, 2, 3],
+			}
+		},
+		"minerals": {
+			"surface": {
+				"stone": 0.0,
+				// other minerals
+			},
+			"mineable":{
+				"stone": 0.0,
+				// other minerals
+			}
+		}
+	}
+
+}

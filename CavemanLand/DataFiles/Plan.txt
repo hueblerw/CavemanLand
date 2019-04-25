@@ -1,0 +1,24 @@
+Plan:
+
+1.  Animal and Plant json outline two classes
+	- make them both
+	- Use the NuGet class and get it imported in.
+	- There should be certain fields that can be excluded from the json printout.
+	- These are calculated on load to save time, but to save data space are not saved
+2.  World Class
+	- create a coordinate class.
+	- build it but with Tile Array, and Herd and Tribe Lists.
+	- build a save function that turns the tiles, herds and tribes into json files
+	- write tests to verify these produce valid json.
+3.  Build a Layer Generator
+	- creates random smoothish layers with expected ranges and properties.
+	- create Temperature Function - fun math time ...
+	- Write tests to verify these functions
+4.  Tile Class
+	- Follow the json format.  It helps with organization of data.  Though it is possible to use the groups as comments if needed.
+	- build functions to populate the tile classes.
+	- *** may be fun to create these unit tests from here on out:  write tests to verify yearly values. ***
+	- "daily" rows have a current value and a function to generate the next day
+	- Habitat is an array of 13 habitat types in json file.  Change this to a true Object, so json-ifies correctly.
+	- Similarly, for game, crops, grazing, etc.
+	- PROBLEM:  Most info flows inward from above.  This is easy to store.  Rivers and habitats data use other daily data.  Rivers particularly use this data from OTHER squares.  This seems like the real technical problem I am facing in terms of efficiency.  Think on solutions:

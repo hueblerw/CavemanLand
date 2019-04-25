@@ -1,0 +1,8 @@
+{
+	"name": "WorldA",
+	"dimensions": [ 50, 50 ],
+	"currentDate": [ 0, 0 ],
+	"tilesFilepath": "Tiles.json",
+	"herdsFilePath": "Herds.json",
+	"tribesFilepath": "Tribes.json",
+}

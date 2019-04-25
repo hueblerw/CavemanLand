@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CavemanLand
+namespace CavemanLand.Models
 {
     public class Plant
     {

@@ -1,0 +1,9 @@
+{
+	"Herd": {
+		"species": "deer",
+		"popsByAge": [0, 4, 5, 3, 2, 1],
+		"location": [0, 0],
+		"fatReserve": 0.0,
+		"memory": [ [0, 0, 1.0], [1, 1, -1.0] ]
+	}
+}
