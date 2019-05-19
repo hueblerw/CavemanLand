@@ -6,7 +6,7 @@
 			"oceanPercent": 0.0,
 			"hillPercent": 0.0
 		},
-		"temperature": {
+		"temperatures": {
 			"high": 70,
 			"low": 20,
 			"summerLength": 60,
@@ -36,9 +36,7 @@
 		"habitats": {
 			"typePercents": [0, 1, 2, 3],
 			"currentLevel": [0, 1, 2, 3],
-			"game": {
-				"currentLevel": [0, 1, 2, 3],
-			}
+			"gameCurrentLevel": [0, 1, 2, 3]
 		},
 		"minerals": {
 			"surface": {

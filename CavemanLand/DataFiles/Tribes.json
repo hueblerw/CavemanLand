@@ -2,6 +2,6 @@
 	"Tribe": {
 		"pops": [],
 		"location": [0, 0],
-		"memory": [ [0, 0], [1, 1] ]
+		"rememberedTiles": [ [0, 0], [1, 1] ]
 	}
 }

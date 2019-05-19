@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 using CavemanLand.Models;
+using CavemanLand.Models.GenericModels;
 
 namespace CavemanLand.Controllers
 {

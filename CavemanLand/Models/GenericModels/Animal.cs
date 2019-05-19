@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CavemanLand.Models
+namespace CavemanLand.Models.GenericModels
 {
     public class Animal
     {

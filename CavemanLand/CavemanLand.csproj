@@ -29,12 +29,29 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Models\Animal.cs" />
-    <Compile Include="Models\Plant.cs" />
     <Compile Include="Controllers\WorldController.cs" />
     <Compile Include="Models\World.cs" />
     <Compile Include="UnitTests\WorldControllerTestClass.cs" />
     <Compile Include="Controllers\Runner.cs" />
+    <Compile Include="Models\GenericModels\Animal.cs" />
+    <Compile Include="Models\GenericModels\Plant.cs" />
+    <Compile Include="Models\Tile.cs" />
+    <Compile Include="Utility\Coordinates.cs" />
+    <Compile Include="UnitTests\CoordinatesUnitTestClass.cs" />
+    <Compile Include="Models\TileSubClasses\Terrain.cs" />
+    <Compile Include="Models\TileSubClasses\Temperatures.cs" />
+    <Compile Include="Models\TileSubClasses\Precipitation.cs" />
+    <Compile Include="Models\TileSubClasses\Rivers.cs" />
+    <Compile Include="Models\TileSubClasses\Habitats.cs" />
+    <Compile Include="Models\TileSubClasses\Minerals.cs" />
+    <Compile Include="Models\TileSubClasses\DailyTemps.cs" />
+    <Compile Include="Models\TileSubClasses\DailyRain.cs" />
+    <Compile Include="Models\TileSubClasses\DailyVolume.cs" />
+    <Compile Include="Utility\WorldDate.cs" />
+    <Compile Include="Utility\Direction.cs" />
+    <Compile Include="Models\Herd.cs" />
+    <Compile Include="Models\TileSubClasses\TileMemory.cs" />
+    <Compile Include="Models\Tribe.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
@@ -49,6 +66,9 @@
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
     <Folder Include="UnitTests\" />
+    <Folder Include="Models\GenericModels\" />
+    <Folder Include="Utility\" />
+    <Folder Include="Models\TileSubClasses\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

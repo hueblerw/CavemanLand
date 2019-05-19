@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CavemanLand.Controllers
+﻿namespace CavemanLand.Controllers
 {
     public class Runner
     {

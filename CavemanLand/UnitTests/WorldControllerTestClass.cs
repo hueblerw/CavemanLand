@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System;
 using CavemanLand.Models;
+using CavemanLand.Models.GenericModels;
 using CavemanLand.Controllers;
 
 namespace CavemanLand.UnitTests
