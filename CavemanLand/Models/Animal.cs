@@ -4,24 +4,30 @@ namespace CavemanLand.Models
 {
     public class Animal
     {
-		private string name;
-		private bool formsHerds;
-		private List<string> habitats;
-		private List<int> abundance;
-		private List<string> foodType;
-		private double foodEaten;
-		private int defense;
-		private int attack;
-		private int[] temperatureTolerance = new int[2];
-		private double foodPerAnimal;
-		private double weightPerUnit;
-		private List<string> production;
-		private List<double> productionPerUnit;
-		private bool isRidable;
-		private bool isBurden;
+		public string name;
+		public int[] formsHerds = new int[2];
+		public List<string> habitats;
+		public List<int> abundance;
+		public List<string> foodType;
+		public double foodEaten;
+		public int defense;
+		public int attack;
+		public int[] temperatureTolerance = new int[2];
+		public double foodPerAnimal;
+		public double weightPerUnit;
+		public List<string> production;
+		public List<double> productionPerUnit;
+		public bool isRidable;
+		public bool isBurden;
 
         public Animal()
         {
         }
+
+		public override string ToString()
+        {
+            return name;
+        }
+
     }
 }

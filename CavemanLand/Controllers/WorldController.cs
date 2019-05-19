@@ -14,21 +14,27 @@ namespace CavemanLand.Controllers
 
         public void generateWorld()
 		{
+			loadGeneralFiles();
 			world = new World(50, 50);
 		}
 
         public void loadGeneralFiles()
 		{
-			string json = loadJsonFileToString(@"Animal.json");
+			string json = loadJsonFileToString("Animal.json");
             World.animalSpecies = JsonConvert.DeserializeObject<Animal[]>(json);
 
-            json = loadJsonFileToString(@"Plant.json");
+            json = loadJsonFileToString("Plants.json");
             World.plantSpecies = JsonConvert.DeserializeObject<Plant[]>(json);
+		}
+
+		public World GetWorld()
+		{
+			return world;
 		}
 
 		private string loadJsonFileToString(string pathname)
 		{
-			return File.ReadAllText(pathname);
+			return File.ReadAllText(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
 		}
     }
 }

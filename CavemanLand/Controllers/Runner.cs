@@ -7,7 +7,6 @@ namespace CavemanLand.Controllers
 		public static void Main()
 		{
 			WorldController controller = new WorldController();
-			controller.loadGeneralFiles();
 			controller.generateWorld();
 		}
     }
