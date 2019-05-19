@@ -1,12 +1,14 @@
-﻿using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using CavemanLand.Models;
 using CavemanLand.Models.GenericModels;
+using CavemanLand.Utility;
 
 namespace CavemanLand.Controllers
 {
     public class WorldController
 	{
+		private const string DATA_FILE_PATH = @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/";
+
 		private World world;
 
 		public WorldController()
@@ -35,7 +37,7 @@ namespace CavemanLand.Controllers
 
 		private string loadJsonFileToString(string pathname)
 		{
-			return File.ReadAllText(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
+			return MyJsonFileInteractor.loadJsonFileToString(DATA_FILE_PATH + pathname);
 		}
     }
 }

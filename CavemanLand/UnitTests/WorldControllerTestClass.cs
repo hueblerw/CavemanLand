@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using Newtonsoft.Json;
-using System.IO;
 using System;
 using CavemanLand.Models;
 using CavemanLand.Models.GenericModels;
 using CavemanLand.Controllers;
+using CavemanLand.Utility;
 
 namespace CavemanLand.UnitTests
 {
@@ -63,7 +63,7 @@ namespace CavemanLand.UnitTests
 
 		private string loadJsonFileToString(string pathname)
         {
-			return File.ReadAllText(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
+			return MyJsonFileInteractor.loadJsonFileToString(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
         }
 
         // removes tabs and line break characters to make comparing jsons accurate.

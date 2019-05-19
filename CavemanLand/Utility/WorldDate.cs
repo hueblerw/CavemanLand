@@ -6,8 +6,8 @@ namespace CavemanLand.Utility
     {
 		public const int DAYS_PER_YEAR = 120;
 
-		private int year;
-		private int day;
+		public int year;
+		public int day;
 
         public WorldDate(int year, int day)
         {

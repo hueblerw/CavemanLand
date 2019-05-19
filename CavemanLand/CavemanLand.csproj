@@ -52,6 +52,9 @@
     <Compile Include="Models\Herd.cs" />
     <Compile Include="Models\TileSubClasses\TileMemory.cs" />
     <Compile Include="Models\Tribe.cs" />
+    <Compile Include="Utility\WorldFile.cs" />
+    <Compile Include="UnitTests\WorldUnitTestClass.cs" />
+    <Compile Include="Utility\MyJsonFileInteractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
@@ -69,9 +72,11 @@
     <Folder Include="Models\GenericModels\" />
     <Folder Include="Utility\" />
     <Folder Include="Models\TileSubClasses\" />
+    <Folder Include="UnitTests\Mocks\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="UnitTests\Mocks\worldFileMock.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
