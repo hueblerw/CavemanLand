@@ -55,6 +55,8 @@
     <Compile Include="Utility\WorldFile.cs" />
     <Compile Include="UnitTests\WorldUnitTestClass.cs" />
     <Compile Include="Utility\MyJsonFileInteractor.cs" />
+    <Compile Include="Generators\LayerGenerator.cs" />
+    <Compile Include="UnitTests\LayerGeneratorTestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
@@ -73,6 +75,7 @@
     <Folder Include="Utility\" />
     <Folder Include="Models\TileSubClasses\" />
     <Folder Include="UnitTests\Mocks\" />
+    <Folder Include="Generators\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

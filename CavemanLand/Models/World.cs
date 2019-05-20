@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using CavemanLand.Utility;
+using CavemanLand.Generators;
 
 namespace CavemanLand.Models
 {
     public class World
     {
+		public const int ROUND_TO = 2;
 		private const string SAVE_FILE_LOCATION = @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/";
 
 		public static Animal[] animalSpecies;
@@ -20,6 +22,9 @@ namespace CavemanLand.Models
 		private Tile[,] tileArray;
 		private List<Herd> herds;
 		private List<Tribe> tribes;
+        
+		private LayerGenerator doubleLayerGenerator;
+		private LayerGenerator intLayerGenerator;
 
         public World(int x, int z)
         {
@@ -29,6 +34,8 @@ namespace CavemanLand.Models
 			tileArray = generateTileArray();
 			herds = new List<Herd>();
 			tribes = new List<Tribe>();
+			doubleLayerGenerator = new LayerGenerator(x, z, ROUND_TO);
+			intLayerGenerator = new LayerGenerator(x, z, 0);
         }
 
         public string tileArrayToJson()
