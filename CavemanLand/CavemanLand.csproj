@@ -57,6 +57,8 @@
     <Compile Include="Utility\MyJsonFileInteractor.cs" />
     <Compile Include="Generators\LayerGenerator.cs" />
     <Compile Include="UnitTests\LayerGeneratorTestClass.cs" />
+    <Compile Include="Generators\TemperatureEquation.cs" />
+    <Compile Include="UnitTests\TemperatureEquationTestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />
