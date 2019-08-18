@@ -1,41 +1,60 @@
 ﻿using System;
+using CavemanLand.Utility;
 
 namespace CavemanLand.Generators
 {
     public class TemperatureEquation
-    {
+    {      
         private double A;
         private double B;
-        private double C;
 
         private double curveMin;
+        private double avgTemp;
         private double variance;
-        private double amplitude;
         private Random randy;
-
+        
         public TemperatureEquation(int lowTemp, int highTemp, int summerLength, double variance)
         {
-            A = (summerLength - 1) / ((-1.0 / 4.0) * summerLength * (Math.Pow(summerLength, 2) - 4.0));
-            B = -3.0 * A;
-            C = 1.0 - A - B;
+            this.randy = new Random();
             this.variance = variance;
-            amplitude = (highTemp - lowTemp) / 2.0;
-            curveMin = lowTemp + amplitude;
-            randy = new Random();
+            this.avgTemp = (highTemp - lowTemp) / 2.0;
+            curveMin = (double) lowTemp + avgTemp;
+            int daysInYear = WorldDate.DAYS_PER_YEAR;
+            double halfSummerLength = summerLength / 2.0;
+            solveQuadratic(daysInYear, halfSummerLength);
         }
 
         public int getTodaysTemp(int day)
         {
-            double x = (day - 1) * (Math.PI / 60.0);  // Do something to the day.  Should go from 0 to 2 PI, but days 1 to 120
-            double G = A * Math.Pow(x, 3) + B * Math.Pow(x, 2) + C * x;
-            double curveTemp = -amplitude * Math.Cos(Math.PI * G) + curveMin;
-            double temp = variance * randy.NextDouble() - (variance / 2.0) + curveTemp;
-            return (int)Math.Round(temp, 0);
+            double randFactor = randy.NextDouble() * variance - (variance / 2.0);
+            return (int) Math.Round(randFactor + baseTemp(day), 0);
         }
 
         public override string ToString()
         {
-            return "-" + amplitude + "cos(PI * [" + A + "x^3 + " + B + "x^2 + " + C + "x]) + " + curveMin;
+            return "-" + avgTemp + "cos(" + A + "x^2 + " + B + "x) + " + curveMin;
+        }
+        
+        private void solveQuadratic(int daysInYear, double halfSummerLength)
+        {
+            A = (Math.PI * (halfSummerLength - 30.0)) / (60.0 * (halfSummerLength - 60.0) * halfSummerLength);
+            B = (Math.PI * (Math.Pow(halfSummerLength, 2) - 120.0 * halfSummerLength + 1800.0)) / (60.0 * (halfSummerLength - 60.0) * halfSummerLength);
+        }
+        
+        private double baseTemp(int day){
+            if (day > 60)
+            {
+                return equationTemp(120 - day);
+            }
+            else
+            {
+                return equationTemp(day);
+            }
+        }
+        
+        private double equationTemp(int day)
+        {
+            return -avgTemp * Math.Cos(A * Math.Pow(day, 2) + B * day) + curveMin;
         }
     }
 }
