@@ -79,9 +79,9 @@ namespace CavemanLand.UnitTests
 			printYearOfTemps(temperatureEquation);
             assertBetween(1, temperatureEquation.getTodaysTemp(1), 20 - 2 / 2, 20 + 2 / 2 + 1);
             assertBetween(120, temperatureEquation.getTodaysTemp(120), 20 - 2 / 2, 20 + 2 / 2);
-            assertBetween(61, temperatureEquation.getTodaysTemp(60), 80 - 2 / 2, 80 + 2 / 2 + 1);
-            assertBetween(91, temperatureEquation.getTodaysTemp(90), 50 - 2 / 2, 50 + 2 / 2 + 1);
-            assertBetween(31, temperatureEquation.getTodaysTemp(30), 50 - 2 / 2, 50 + 2 / 2 + 1);
+            assertBetween(60, temperatureEquation.getTodaysTemp(60), 80 - 2 / 2, 80 + 2 / 2 + 1);
+            assertBetween(90, temperatureEquation.getTodaysTemp(90), 50 - 2 / 2, 50 + 2 / 2 + 1);
+            assertBetween(30, temperatureEquation.getTodaysTemp(30), 50 - 2 / 2, 50 + 2 / 2 + 1);
         }
 
 		[Test()]
@@ -100,7 +100,7 @@ namespace CavemanLand.UnitTests
         private void assertBetween(int day, int value, int lowerBound, int higherBound)
 		{
 			Assert.LessOrEqual(value, higherBound, "Value [" + value + "] is above higherBound [" + higherBound + "] for day: " + day);
-			Assert.GreaterOrEqual(value, lowerBound, "Value [" + value + "] is above lowerBound [" + lowerBound + "] for day: " + day);
+			Assert.GreaterOrEqual(value, lowerBound, "Value [" + value + "] is below lowerBound [" + lowerBound + "] for day: " + day);
 		}
 
         // The new function is only monotonic for 35.2 < summerLength < 84.8
