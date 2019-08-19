@@ -13,8 +13,9 @@ namespace CavemanLand.Models
 		public Habitats habitats;
 		public Minerals minerals;
 
-        public Tile()
+        public Tile(int x, int z)
         {
+			coor = new Coordinates(x, z);
         }
     }
 }

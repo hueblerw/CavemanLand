@@ -12,5 +12,14 @@ namespace CavemanLand.UnitTests
 			Coordinates coordinates = new Coordinates(20, 40);
 			Assert.AreEqual("(20, 40)", coordinates.ToString());
         }
+
+        // Test Equals Function
+
+        // Test Get Tiles Around
+
+		// Test randomDirectionAround
+
+		// Test findCoordinatesInDirection
+
     }
 }
