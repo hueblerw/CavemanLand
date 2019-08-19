@@ -5,6 +5,8 @@ namespace CavemanLand.Utility
 {
     public class Coordinates
     {
+		private static int worldX;
+		private static int worldZ;
 		public int x;
 		public int z;
 
@@ -13,6 +15,12 @@ namespace CavemanLand.Utility
 			this.x = x;
 			this.z = z;
         }
+
+        public static void setWorldSize(int x, int z)
+		{
+			worldX = x;
+			worldZ = z;
+		}
 
 		public override string ToString()
 		{
@@ -79,7 +87,7 @@ namespace CavemanLand.Utility
 				forbiddenDirections.Add(Direction.AllDirections.lower_left);
 				forbiddenDirections.Add(Direction.AllDirections.upper_left);
             }
-            if (coor.x == x - 1)
+            if (coor.x == worldX - 1)
             {
 				forbiddenDirections.Add(Direction.AllDirections.right);
 				forbiddenDirections.Add(Direction.AllDirections.lower_right);
@@ -91,7 +99,7 @@ namespace CavemanLand.Utility
 				forbiddenDirections.Add(Direction.AllDirections.upper_right);
 				forbiddenDirections.Add(Direction.AllDirections.upper_left);
             }
-            if (coor.z == z - 1)
+            if (coor.z == worldZ - 1)
             {
 				forbiddenDirections.Add(Direction.AllDirections.down);
 				forbiddenDirections.Add(Direction.AllDirections.lower_right);
