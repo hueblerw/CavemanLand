@@ -20,7 +20,7 @@ namespace CavemanLand.Generators
 		public double[,] GenerateWorldLayer(double min, double max, double maxChange, double startingValue, bool squared)
         {
             double[,] layer = new double[X, Z];
-            layer[0, 0] = startingValue;
+			layer[0, 0] = Math.Round(startingValue, roundTo);
             layer = BuildTopRow(layer, min, max, maxChange, squared);
             layer = BuildLeftMostColumn(layer, min, max, maxChange, squared);
 			layer = FillOutRemainingWorld(layer, min, max, maxChange, squared);

@@ -44,6 +44,7 @@ namespace CavemanLand.Models
         {
 			this.x = x;
 			this.z = z;
+			Coordinates.setWorldSize(x, z);
 			currentDate = new WorldDate(1, 1);
 			herds = new List<Herd>();
 			tribes = new List<Tribe>();
@@ -78,8 +79,14 @@ namespace CavemanLand.Models
 			writeFileToPath("tribes", tribesFileJson);
 		}
 
-		public void generateNewYear(){
+		public void generateNewYear()
+		{
 			throw new NotImplementedException();
+		}
+
+		public Tile[,] getTileArray()
+		{
+			return tileArray;
 		}
 
         private void writeFileToPath(string filename, string json)
@@ -105,7 +112,8 @@ namespace CavemanLand.Models
 				for (int z = 0; z < this.z; z++)
 				{
 					tiles[x, z] = new Tile(x, z);
-					tiles[x, z].terrain = new Terrain(elevations[x, z], calculateOceanPercentage(tiles[x, z].coor, elevations), calculateHillPercentage(tiles[x, z].coor, elevations));               
+					double oceanPer = calculateOceanPercentage(tiles[x, z].coor, elevations);
+					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));               
 				}
 			}
 
@@ -120,12 +128,12 @@ namespace CavemanLand.Models
 
 		private double calculateMaxDiff(double[,] elevations)
 		{
-			double diffSum = 0.0;
 			double max = 0.0;
 			for (int x = 0; x < this.x; x++){
 				for (int z = 0; z < this.z; z++){
 					Coordinates coord = new Coordinates(x, z);
                     List<Coordinates> coorAround = coord.getCoordinatesAround();
+					double diffSum = 0.0;
 					foreach (Coordinates coor in coorAround)
                     {
 						diffSum += Math.Abs(elevations[coord.x, coord.z] - elevations[coor.x, coor.z]);   
@@ -148,23 +156,24 @@ namespace CavemanLand.Models
 				if (current < 0.0){
 					negSum += current;
 				}
-				sum += current;
+				sum += Math.Abs(current);
 			}
-			return Math.Round(Math.Abs(negSum) / sum, ROUND_TO);
+			return Math.Round(Math.Abs(negSum / sum), ROUND_TO);
 		}
 
-		private double calculateHillPercentage(Coordinates coordinates, double[,] elevations)
+		private double calculateHillPercentage(Coordinates coordinates, double[,] elevations, double oceanPer)
 		{
+			if (oceanPer >= 1.00){
+				return 0.0;
+			}
 			List<Coordinates> coorAround = coordinates.getCoordinatesAround();
-            double sum = 0.0;
             double diffSum = 0.0;
             foreach (Coordinates coor in coorAround)
             {
                 double current = elevations[coor.x, coor.z];
 				diffSum += Math.Abs(elevations[coordinates.x, coordinates.z] - current);
-                sum += current;
             }
-			return Math.Round(Math.Abs(diffSum) / sum, ROUND_TO);
+			return Math.Round(Math.Abs(diffSum / maxDiff), ROUND_TO);
 		}
     }
 }

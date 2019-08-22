@@ -26,9 +26,10 @@ namespace CavemanLand.Utility
 		{
 			return "(" + x + ", " + z + ")";
 		}
-
-		public bool Equals(Coordinates coordinates)
+        
+		public override bool Equals(object obj)
         {
+			Coordinates coordinates = (Coordinates) obj;
             return (this.x == coordinates.x && this.z == coordinates.z);
         }
 
@@ -105,7 +106,7 @@ namespace CavemanLand.Utility
 				forbiddenDirections.Add(Direction.AllDirections.lower_right);
 				forbiddenDirections.Add(Direction.AllDirections.lower_left);
             }
-
+            
             return forbiddenDirections;
         }
 

@@ -9,8 +9,6 @@ namespace CavemanLand.Utility
 		public string direction;
 		private static string[] possibleCardinalValues = { "up", "down", "left", "right" };
 		private static string[] possibleValues = { "up", "down", "left", "right", "upper_left", "upper_right", "lower_left", "lower_right" };
-		private static List<Direction.AllDirections> allDirections;
-		private static List<Direction.CardinalDirections> cardinalDirections;
 
         public static int getNumberOfDirections()
 		{
@@ -24,29 +22,29 @@ namespace CavemanLand.Utility
 
         public static List<Direction.AllDirections> getAllDirections()
 		{
-			if (allDirections == null){
-				allDirections = new List<AllDirections>();
-                allDirections.Add(AllDirections.down);
-                allDirections.Add(AllDirections.up);
-                allDirections.Add(AllDirections.left);
-                allDirections.Add(AllDirections.right);
-                allDirections.Add(AllDirections.lower_left);
-                allDirections.Add(AllDirections.lower_right);
-                allDirections.Add(AllDirections.upper_left);
-                allDirections.Add(AllDirections.upper_right);
-			}         
+			List <Direction.AllDirections> allDirections = new List<Direction.AllDirections>();
+			allDirections = new List<AllDirections>();
+            allDirections.Add(AllDirections.down);
+            allDirections.Add(AllDirections.up);
+            allDirections.Add(AllDirections.left);
+            allDirections.Add(AllDirections.right);
+            allDirections.Add(AllDirections.lower_left);
+            allDirections.Add(AllDirections.lower_right);
+            allDirections.Add(AllDirections.upper_left);
+            allDirections.Add(AllDirections.upper_right);
+
 			return allDirections;
 		}
 
 		public static List<Direction.CardinalDirections> getAllCardinalDirections()
         {
-			if (cardinalDirections == null){
-				cardinalDirections = new List<Direction.CardinalDirections>();
-                cardinalDirections.Add(CardinalDirections.down);
-                cardinalDirections.Add(CardinalDirections.up);
-                cardinalDirections.Add(CardinalDirections.left);
-				cardinalDirections.Add(CardinalDirections.right);
-			} 
+			List<Direction.CardinalDirections> cardinalDirections = new List<Direction.CardinalDirections>();
+			cardinalDirections = new List<Direction.CardinalDirections>();
+            cardinalDirections.Add(CardinalDirections.down);
+            cardinalDirections.Add(CardinalDirections.up);
+            cardinalDirections.Add(CardinalDirections.left);
+			cardinalDirections.Add(CardinalDirections.right);
+
 			return cardinalDirections;
         }
 
