@@ -16,6 +16,15 @@ namespace CavemanLand.Generators
 			this.roundTo = roundTo;
 			randy = new Random();
 		}
+        
+		public int[,] GenerateIntLayer(int min, int max, double maxChange, int startingValue, bool squared)
+        {
+			if (roundTo != 0){
+				throw new Exception("Creating an integer array with a roundTo != 0 is not a good idea!");
+			}
+			double[,] layer = GenerateWorldLayer(min, max, maxChange, startingValue, squared);
+			return convertDoubleArrayToInt(layer);
+        }
 
 		public double[,] GenerateWorldLayer(double min, double max, double maxChange, double startingValue, bool squared)
         {
@@ -34,7 +43,7 @@ namespace CavemanLand.Generators
             {
                 for (int z = 0; z < Z; z++)
                 {
-                    intArray[x, z] = (int)array[x, z];
+					intArray[x, z] = (int) array[x, z];
                 }
             }
             return intArray;

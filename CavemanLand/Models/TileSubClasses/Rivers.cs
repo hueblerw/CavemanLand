@@ -19,7 +19,6 @@ namespace CavemanLand.Models.TileSubClasses
 			this.flowDirection = flowDirection;
 			this.upstreamDirections = upstreamDirections;
 			this.flowRate = flowRate;
-			this.dailyVolume = dailyVolume;
         }
     }
 }

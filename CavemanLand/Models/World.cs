@@ -17,6 +17,27 @@ namespace CavemanLand.Models
     		private const double STARTING_ELE_RANGE = 10.0;
             private const double STARTING_ELE_MIN = -5.0;
             private const double ELE_CHANGE_BY = 2.0;
+		    // Temperature 
+		    private const int LOW_TEMP_MIN = -25;
+		    private const int LOW_TEMP_MAX = 75;
+    		private const int HIGH_TEMP_MIN = 15;
+            private const int HIGH_TEMP_MAX = 115;
+		    private const int TEMP_CHANGE_BY = 2;
+    		private const double STARTING_HIGH_TEMP_RANGE = 40.0;
+		    private const double STARTING_HIGH_TEMP_MIN = 40.0;
+    		private const double STARTING_LOW_TEMP_RANGE = 30.0;
+            private const double STARTING_LOW_TEMP_MIN = 5.0;
+    		private const int SUMMER_LENGTH_MIN = 36;
+    		private const int SUMMER_LENGTH_MAX = 84;
+            private const double VARIANCE_MIN = 0.0;
+    		private const double VARIANCE_MAX = 12.0;
+            private const double VARIANCE_CHANGE_BY = 1.0;
+            private const double STARTING_SUMMER_LENGTH_RANGE = 20.0;
+    		private const double STARTING_SUMMER_LENGTH_MIN = 40.0;
+    		// Precipitation
+    		private const double HUMIDITY_MIN = 0.0;
+    		private const double HUMIDITY_MAX = 12.0;
+    		private const double HUMIDITY_CHANGE_BY = 2.0;
             
         // General Constants
 		public const int ROUND_TO = 2;
@@ -53,6 +74,9 @@ namespace CavemanLand.Models
 			randy = new Random();
 			maxDiff = 0.0;
 			tileArray = generateTileArray();
+            // Once the basic stats are generated - generate 20 years of weather
+            // This finishes the rivers, and gives the data to generate the habitats.
+            // Then Generate 2 more years of weather to start the game.
         }
         
         public string tileArrayToJson()
@@ -105,7 +129,14 @@ namespace CavemanLand.Models
 			// Generate Objects
 			double[,] elevations = generateElevationMap();
 			maxDiff = calculateMaxDiff(elevations);
-            
+            // how can i make sure low temps are below high temps?
+			int[,] lowTemps = generateLowTemps();
+			int[,] highTemps = generateHighTemps();
+			int[,] summerLengths = generateSummerLength();
+			double[,] variances = generateVariance();
+			double[][,] humidities = generateHumidities();
+            // Generate Mineral Layers
+
 			// Populate layers
 			for (int x = 0; x < this.x; x++)
 			{
@@ -113,10 +144,14 @@ namespace CavemanLand.Models
 				{
 					tiles[x, z] = new Tile(x, z);
 					double oceanPer = calculateOceanPercentage(tiles[x, z].coor, elevations);
-					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));               
+					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));
+					tiles[x, z].temperatures = new Temperatures(lowTemps[x, z], highTemps[x, z], summerLengths[x, z], variances[x, z]);
+					tiles[x, z].precipitation = new Precipitation(convertThisTilesHumiditiesToArray(x, z, humidities));
+                    // Next is River directions
+                    // Then Minerals
 				}
 			}
-
+            
 			return tiles;
 		}
         
@@ -174,6 +209,49 @@ namespace CavemanLand.Models
 				diffSum += Math.Abs(elevations[coordinates.x, coordinates.z] - current);
             }
 			return Math.Round(Math.Abs(diffSum / maxDiff), ROUND_TO);
+		}
+
+		private int[,] generateLowTemps()
+        {
+			int startingValue = (int) Math.Round(randy.NextDouble() * STARTING_LOW_TEMP_RANGE + STARTING_LOW_TEMP_MIN, 0);
+            return intLayerGenerator.GenerateIntLayer(LOW_TEMP_MIN, LOW_TEMP_MAX, TEMP_CHANGE_BY, startingValue, false);
+        }
+        
+		private int[,] generateHighTemps()
+        {
+			int startingValue = (int) Math.Round(randy.NextDouble() * STARTING_HIGH_TEMP_RANGE + STARTING_HIGH_TEMP_MIN, 0);
+			return intLayerGenerator.GenerateIntLayer(HIGH_TEMP_MIN, HIGH_TEMP_MAX, TEMP_CHANGE_BY, startingValue, false);
+        }
+
+		private int[,] generateSummerLength()
+        {
+			int startingValue = (int) Math.Round(randy.NextDouble() * STARTING_SUMMER_LENGTH_RANGE + STARTING_SUMMER_LENGTH_MIN, 0);
+			return intLayerGenerator.GenerateIntLayer(SUMMER_LENGTH_MIN, SUMMER_LENGTH_MAX, TEMP_CHANGE_BY, startingValue, false);
+        }
+        
+		private double[,] generateVariance()
+        {
+            double startingValue = randy.NextDouble() * VARIANCE_MAX + VARIANCE_MIN;
+            return doubleLayerGenerator.GenerateWorldLayer(VARIANCE_MIN, VARIANCE_MAX, VARIANCE_CHANGE_BY, startingValue, false);
+        }
+        
+		private double[][,] generateHumidities()
+        {
+			double[][,] humidities = new double[Precipitation.HUMIDITY_CROSS_SECTIONS][,];
+			for (int i = 0; i < Precipitation.HUMIDITY_CROSS_SECTIONS; i++){
+				double startingValue = randy.NextDouble() * HUMIDITY_MAX + HUMIDITY_MIN;
+                humidities[i] = doubleLayerGenerator.GenerateWorldLayer(HUMIDITY_MIN, HUMIDITY_MAX, HUMIDITY_CHANGE_BY, startingValue, false);
+			}
+			return humidities;
+        }
+
+		private double[] convertThisTilesHumiditiesToArray(int x, int z, double[][,] humidities)
+		{
+			double[] array = new double[Precipitation.HUMIDITY_CROSS_SECTIONS];
+			for (int i = 0; i < Precipitation.HUMIDITY_CROSS_SECTIONS; i++){
+				array[i] = humidities[i][x, z];
+			}
+			return array;
 		}
     }
 }

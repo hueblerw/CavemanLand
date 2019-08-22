@@ -59,6 +59,7 @@ namespace CavemanLand.UnitTests
             Console.WriteLine("(200, 200) World Creation Time: " + ts);
         }
 
+        // Terrain generation tests
 		[Test()]
         public void verifyOceanPercentageRange()
         {
@@ -97,6 +98,9 @@ namespace CavemanLand.UnitTests
                 }
             }
         }
+
+        // Temperature Layer generation tests
+
 
         private void verifyExpectedJson(string expectedPath, string actualPath)
 		{
