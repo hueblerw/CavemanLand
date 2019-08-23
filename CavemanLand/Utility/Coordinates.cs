@@ -44,6 +44,11 @@ namespace CavemanLand.Utility
             return coordinates;
         }
 
+		public List<Direction.CardinalDirections> getCardinalDirectionsAround()
+        {
+			return getLegalCardinalDirectionsAround(findCardinalDirectionsOffWorldMap(this));
+        }
+
         public Coordinates randomDirectionAround()
         {
             // get directions that are forbidden base on coordinates.
@@ -78,6 +83,22 @@ namespace CavemanLand.Utility
             throw new Exception("Invalid Direction supplied!");
         }
 
+		public Coordinates findCoordinatesInCardinalDirection(Direction.CardinalDirections direction)
+        {
+            switch (direction)
+            {
+                case Direction.CardinalDirections.up:
+                    return new Coordinates(x, z - 1);
+				case Direction.CardinalDirections.down:
+                    return new Coordinates(x, z + 1);
+				case Direction.CardinalDirections.left:
+                    return new Coordinates(x - 1, z);
+				case Direction.CardinalDirections.right:
+                    return new Coordinates(x + 1, z);
+            }
+            throw new Exception("Invalid Direction supplied!");
+        }
+        
         private List<Direction.AllDirections> findDirectionsOffWorldMap(Coordinates coor)
         {
             List<Direction.AllDirections> forbiddenDirections = new List<Direction.AllDirections>();
@@ -110,6 +131,30 @@ namespace CavemanLand.Utility
             return forbiddenDirections;
         }
 
+		private List<Direction.CardinalDirections> findCardinalDirectionsOffWorldMap(Coordinates coor)
+        {
+			List<Direction.CardinalDirections> forbiddenDirections = new List<Direction.CardinalDirections>();
+
+            if (coor.x == 0)
+            {
+                forbiddenDirections.Add(Direction.CardinalDirections.left);
+            }
+            if (coor.x == worldX - 1)
+            {
+				forbiddenDirections.Add(Direction.CardinalDirections.right);
+            }
+            if (coor.z == 0)
+            {
+				forbiddenDirections.Add(Direction.CardinalDirections.up);
+            }
+            if (coor.z == worldZ - 1)
+            {
+				forbiddenDirections.Add(Direction.CardinalDirections.down);
+            }
+
+            return forbiddenDirections;
+        }
+
 		private Direction.AllDirections getRandomDirection(List<Direction.AllDirections> directionsToRemove)
 		{
 			Random randy = new Random();
@@ -127,5 +172,15 @@ namespace CavemanLand.Utility
             }
 			return legalList;
 		}
+        
+		private List<Direction.CardinalDirections> getLegalCardinalDirectionsAround(List<Direction.CardinalDirections> directionsToRemove)
+        {
+			List<Direction.CardinalDirections> legalList = Direction.getAllCardinalDirections();
+			foreach (Direction.CardinalDirections direction in directionsToRemove)
+            {
+                legalList.Remove(direction);
+            }
+            return legalList;
+        }
 	}
 }

@@ -7,7 +7,7 @@ namespace CavemanLand.Utility
     public class Direction
     {
 		public string direction;
-		private static string[] possibleCardinalValues = { "up", "down", "left", "right" };
+		private static string[] possibleCardinalValues = { "up", "down", "left", "right", "none" };
 		private static string[] possibleValues = { "up", "down", "left", "right", "upper_left", "upper_right", "lower_left", "lower_right" };
 
         public static int getNumberOfDirections()
@@ -65,7 +65,8 @@ namespace CavemanLand.Utility
             up,
             down,
             right,
-            left
+            left, 
+			none
         };
 
         public Direction()
@@ -77,6 +78,21 @@ namespace CavemanLand.Utility
 			validateDirection(direction, isCardinal);
 			this.direction = direction;
         }
+
+		public static bool isOpposite(CardinalDirections directionA, CardinalDirections directionB)
+		{
+			switch(directionA){
+				case Direction.CardinalDirections.up:
+                    return directionB == CardinalDirections.down;
+                case Direction.CardinalDirections.down:
+					return directionB == CardinalDirections.up;
+                case Direction.CardinalDirections.left:
+					return directionB == CardinalDirections.right;
+                case Direction.CardinalDirections.right:
+					return directionB == CardinalDirections.left;
+			}
+			return false;
+		}
 
         private void validateDirection(string dir, bool isCardinal)
 		{

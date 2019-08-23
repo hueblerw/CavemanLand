@@ -5,8 +5,8 @@ namespace CavemanLand.Models.TileSubClasses
 {
     public class Rivers
     {
-		public Direction flowDirection;
-		public List<Direction> upstreamDirections;
+		public Direction.CardinalDirections flowDirection;
+		public List<Direction.CardinalDirections> upstreamDirections;
 		public double flowRate;
 		public DailyVolume dailyVolume;
 
@@ -14,7 +14,7 @@ namespace CavemanLand.Models.TileSubClasses
         {
         }
 
-		public Rivers(Direction flowDirection, List<Direction> upstreamDirections, double flowRate, DailyVolume dailyVolume)
+		public Rivers(Direction.CardinalDirections flowDirection, List<Direction.CardinalDirections> upstreamDirections, double flowRate)
         {
 			this.flowDirection = flowDirection;
 			this.upstreamDirections = upstreamDirections;

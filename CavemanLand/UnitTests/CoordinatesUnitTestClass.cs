@@ -81,6 +81,25 @@ namespace CavemanLand.UnitTests
 			Assert.AreEqual(new Coordinates(19, 50), coord2);
         }
 
+		[Test()]
+        public void GetCardinalDirectionsAroundTest()
+        {
+            Coordinates.setWorldSize(50, 50);
+            Coordinates coordinates = new Coordinates(20, 40);
+            List<Direction.CardinalDirections> list = coordinates.getCardinalDirectionsAround();
+            Coordinates coordinates2 = new Coordinates(0, 49);
+			List<Direction.CardinalDirections> list2 = coordinates2.getCardinalDirectionsAround();
+            Coordinates coordinates3 = new Coordinates(0, 34);
+			List<Direction.CardinalDirections> list3 = coordinates3.getCardinalDirectionsAround();
+            Coordinates coordinates4 = new Coordinates(49, 0);
+			List<Direction.CardinalDirections> list4 = coordinates4.getCardinalDirectionsAround();
+
+			Assert.AreEqual("down, up, left, right, ", printDirectionList(list));
+			Assert.AreEqual("up, right, ", printDirectionList(list2));
+			Assert.AreEqual("down, up, right, ", printDirectionList(list3));
+			Assert.AreEqual("down, left, ", printDirectionList(list4));
+        }
+
         private string printCoordinateList(List<Coordinates> list)
 		{
 			string output = "";
@@ -88,6 +107,16 @@ namespace CavemanLand.UnitTests
 				output += coor + ", ";
 			}
 			return output;
+		}
+
+		private string printDirectionList(List<Direction.CardinalDirections> list)
+		{
+			string output = "";
+            foreach (Direction.CardinalDirections direction in list)
+            {
+                output += direction + ", ";
+            }
+            return output;
 		}
         
     }

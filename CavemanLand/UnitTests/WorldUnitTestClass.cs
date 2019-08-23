@@ -101,6 +101,34 @@ namespace CavemanLand.UnitTests
 
         // Temperature Layer generation tests
 
+		[Test()]
+        public void TempValuesRangeTest()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+                    assertBetween(tileArray[x, z].temperatures.low, -25, 75);
+					assertBetween(tileArray[x, z].temperatures.high, 15, 115);
+					assertBetween(tileArray[x, z].temperatures.summerLength, 36, 84);
+                    assertBetween(tileArray[x, z].temperatures.variance, 0.0, 12.0);
+                }
+            }
+        }
+
+		[Test()]
+        public void HighTempIsHigherThanLowTempTest()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					Assert.GreaterOrEqual(tileArray[x, z].temperatures.high, tileArray[x, z].temperatures.low + 10);
+                }
+            }
+        }
 
         private void verifyExpectedJson(string expectedPath, string actualPath)
 		{

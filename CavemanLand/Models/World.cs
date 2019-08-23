@@ -23,8 +23,8 @@ namespace CavemanLand.Models
     		private const int HIGH_TEMP_MIN = 15;
             private const int HIGH_TEMP_MAX = 115;
 		    private const int TEMP_CHANGE_BY = 2;
-    		private const double STARTING_HIGH_TEMP_RANGE = 40.0;
-		    private const double STARTING_HIGH_TEMP_MIN = 40.0;
+    		private const double STARTING_HIGH_TEMP_RANGE = 35.0;
+		    private const double STARTING_HIGH_TEMP_MIN = 45.0;
     		private const double STARTING_LOW_TEMP_RANGE = 30.0;
             private const double STARTING_LOW_TEMP_MIN = 5.0;
     		private const int SUMMER_LENGTH_MIN = 36;
@@ -38,6 +38,8 @@ namespace CavemanLand.Models
     		private const double HUMIDITY_MIN = 0.0;
     		private const double HUMIDITY_MAX = 12.0;
     		private const double HUMIDITY_CHANGE_BY = 2.0;
+    		// Rivers
+    		private const double FLOW_RATE_MULT = 0.2;
             
         // General Constants
 		public const int ROUND_TO = 2;
@@ -129,12 +131,13 @@ namespace CavemanLand.Models
 			// Generate Objects
 			double[,] elevations = generateElevationMap();
 			maxDiff = calculateMaxDiff(elevations);
-            // how can i make sure low temps are below high temps?
 			int[,] lowTemps = generateLowTemps();
-			int[,] highTemps = generateHighTemps();
+			int[,] highTemps = generateHighTemps(lowTemps);
 			int[,] summerLengths = generateSummerLength();
 			double[,] variances = generateVariance();
 			double[][,] humidities = generateHumidities();
+			double[,] flowRates;
+			Direction.CardinalDirections[,] downstreamDirections = calculateDownStreams(elevations, out flowRates);
             // Generate Mineral Layers
 
 			// Populate layers
@@ -147,7 +150,9 @@ namespace CavemanLand.Models
 					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));
 					tiles[x, z].temperatures = new Temperatures(lowTemps[x, z], highTemps[x, z], summerLengths[x, z], variances[x, z]);
 					tiles[x, z].precipitation = new Precipitation(convertThisTilesHumiditiesToArray(x, z, humidities));
-                    // Next is River directions
+					// Next is River directions - THIS IS UNTESTED!!!
+					List<Direction.CardinalDirections> upstreamDirections = getUpstreamFromDownstream(x, z, downstreamDirections);
+					tiles[x, z].rivers = new Rivers(downstreamDirections[x, z], upstreamDirections, flowRates[x, z]);
                     // Then Minerals
 				}
 			}
@@ -217,10 +222,10 @@ namespace CavemanLand.Models
             return intLayerGenerator.GenerateIntLayer(LOW_TEMP_MIN, LOW_TEMP_MAX, TEMP_CHANGE_BY, startingValue, false);
         }
         
-		private int[,] generateHighTemps()
+		private int[,] generateHighTemps(int[,] lowTemps)
         {
 			int startingValue = (int) Math.Round(randy.NextDouble() * STARTING_HIGH_TEMP_RANGE + STARTING_HIGH_TEMP_MIN, 0);
-			return intLayerGenerator.GenerateIntLayer(HIGH_TEMP_MIN, HIGH_TEMP_MAX, TEMP_CHANGE_BY, startingValue, false);
+			return intLayerGenerator.GenerateIntLayer(HIGH_TEMP_MIN, HIGH_TEMP_MAX, TEMP_CHANGE_BY, startingValue, false, lowTemps);
         }
 
 		private int[,] generateSummerLength()
@@ -253,5 +258,50 @@ namespace CavemanLand.Models
 			}
 			return array;
 		}
+
+		private Direction.CardinalDirections[,] calculateDownStreams(double[,] elevations, out double[,] flowRates)
+		{
+			Direction.CardinalDirections[,] downstreams = new Direction.CardinalDirections[this.x, this.z];
+			flowRates = new double[this.x, this.z];
+			for (int x = 0; x < this.x; x++){
+				for (int z = 0; z < this.z; z++)
+                {
+					Coordinates myPosition = new Coordinates(x, z);
+					List<Direction.CardinalDirections> directionsAround = myPosition.getCardinalDirectionsAround();
+					double lowest = elevations[x, z];
+					Direction.CardinalDirections flowTo = Direction.CardinalDirections.none;
+					foreach(Direction.CardinalDirections direction in directionsAround)
+					{
+						Coordinates coor = myPosition.findCoordinatesInCardinalDirection(direction);
+						if(elevations[coor.x, coor.z] < lowest)
+						{
+							lowest = elevations[coor.x, coor.z];
+							flowTo = direction;
+						}
+					}
+					downstreams[x, z] = flowTo;
+					flowRates[x, z] = Math.Round((elevations[x, z] - lowest) * FLOW_RATE_MULT, ROUND_TO);
+                }
+			}
+
+			return downstreams;
+		}
+
+		private List<Direction.CardinalDirections> getUpstreamFromDownstream(int x, int z, Direction.CardinalDirections[,] downstreamDirections)
+		{
+			List<Direction.CardinalDirections> upstream = new List<Direction.CardinalDirections>();
+			Coordinates myPosition = new Coordinates(x, z);
+			List<Direction.CardinalDirections> directionAroundMe = myPosition.getCardinalDirectionsAround();
+			foreach(Direction.CardinalDirections direction in directionAroundMe)
+			{
+				Coordinates coor = myPosition.findCoordinatesInCardinalDirection(direction);
+				if(Direction.isOpposite(downstreamDirections[coor.x, coor.z], direction)){
+					upstream.Add(direction);
+				}
+			}
+
+			return upstream;
+		}
+
     }
 }
