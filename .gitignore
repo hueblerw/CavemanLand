@@ -39,3 +39,6 @@ Thumbs.db
 
 # dotCover
 *.dotCover
+
+# World Save Files
+CavemanLand/SaveFiles/*.json
