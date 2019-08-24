@@ -90,6 +90,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="UnitTests\Mocks\worldFileMock.json" />
+    <None Include="UnitTests\Mocks\worldFileMockWorldB.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

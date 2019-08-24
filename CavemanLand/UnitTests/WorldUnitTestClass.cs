@@ -23,9 +23,22 @@ namespace CavemanLand.UnitTests
         [Test()]
         public void gameFileSavingTest()
         {
-			world.saveGameFiles();
+			world.saveGameFiles("WorldA");
 			// verify that this works correctly.
 			verifyExpectedJson(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/UnitTests/Mocks/worldFileMock.json", @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldA-worldFile.json");
+        }
+
+		[Test()]
+        public void gameFileLoadingTest()
+        {
+            world.saveGameFiles("WorldA");
+			World worldB = World.loadGameFiles("WorldA");
+			// verify that this works correctly.
+			worldB.saveGameFiles("WorldB");
+			verifyExpectedJson(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/UnitTests/Mocks/worldFileMockWorldB.json", @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldB-worldFile.json");
+			verifyExpectedJson(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldA-tiles.json", @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldB-tiles.json");
+			verifyExpectedJson(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldA-herds.json", @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldB-herds.json");
+			verifyExpectedJson(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldA-tribes.json", @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/WorldB-tribes.json");
         }
 
 		[Test()]

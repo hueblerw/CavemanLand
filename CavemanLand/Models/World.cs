@@ -63,6 +63,7 @@ namespace CavemanLand.Models
 		private LayerGenerator intLayerGenerator;
 		private Random randy;
 
+        // This constructor is for generating new worlds from scratch
         public World(int x, int z)
         {
 			this.x = x;
@@ -80,14 +81,30 @@ namespace CavemanLand.Models
             // This finishes the rivers, and gives the data to generate the habitats.
             // Then Generate 2 more years of weather to start the game.
         }
+
+        // This constructor is intended only for loading extant worlds from File
+		private World(WorldFile worldFile, Tile[,] tileArray, List<Herd> herds, List<Tribe> tribes)
+		{
+			this.x = worldFile.dimensions[0];
+            this.z = worldFile.dimensions[1];
+            Coordinates.setWorldSize(x, z);
+            currentDate = new WorldDate(1, 1);
+            this.herds = herds;
+            this.tribes = tribes;
+            doubleLayerGenerator = new LayerGenerator(x, z, ROUND_TO);
+            intLayerGenerator = new LayerGenerator(x, z, 0);
+            randy = new Random();
+			this.tileArray = tileArray;
+		}
         
         public string tileArrayToJson()
 		{
 			return JsonConvert.SerializeObject(tileArray);
 		}
 
-		public void saveGameFiles()
+		public void saveGameFiles(string worldName)
 		{
+			this.worldName = worldName;
 			int[] dim = { x, z };
 			string tileFileLocation = concatenateFileName("tiles");
 			string herdFileLocation = concatenateFileName("herds");
@@ -104,6 +121,19 @@ namespace CavemanLand.Models
 			writeFileToPath("herds", herdsFileJson);
 			writeFileToPath("tribes", tribesFileJson);
 		}
+        
+        public static World loadGameFiles(string worldName)
+		{
+			string json = loadGameFileToString(worldName + "-worldFile.json");
+			WorldFile worldFile = JsonConvert.DeserializeObject<WorldFile>(json);
+			json = loadGameFileToString(worldName + "-tiles.json");
+            Tile[,] tileArray = JsonConvert.DeserializeObject<Tile[,]>(json);
+			json = loadGameFileToString(worldName + "-herds.json");
+			List<Herd> herds = JsonConvert.DeserializeObject<List<Herd>>(json);
+			json = loadGameFileToString(worldName + "-tribes.json");
+			List<Tribe> tribes = JsonConvert.DeserializeObject<List<Tribe>>(json);
+			return new World(worldFile, tileArray, herds, tribes);
+		}
 
 		public void generateNewYear()
 		{
@@ -114,6 +144,11 @@ namespace CavemanLand.Models
 		{
 			return tileArray;
 		}
+
+		private static string loadGameFileToString(string pathname)
+        {
+            return MyJsonFileInteractor.loadJsonFileToString(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/" + pathname);
+        }
 
         private void writeFileToPath(string filename, string json)
 		{
@@ -150,7 +185,6 @@ namespace CavemanLand.Models
 					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));
 					tiles[x, z].temperatures = new Temperatures(lowTemps[x, z], highTemps[x, z], summerLengths[x, z], variances[x, z]);
 					tiles[x, z].precipitation = new Precipitation(convertThisTilesHumiditiesToArray(x, z, humidities));
-					// Next is River directions - THIS IS UNTESTED!!!
 					List<Direction.CardinalDirections> upstreamDirections = getUpstreamFromDownstream(x, z, downstreamDirections);
 					tiles[x, z].rivers = new Rivers(downstreamDirections[x, z], upstreamDirections, flowRates[x, z]);
                     // Then Minerals
