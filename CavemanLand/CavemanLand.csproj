@@ -59,6 +59,7 @@
     <Compile Include="UnitTests\LayerGeneratorTestClass.cs" />
     <Compile Include="Generators\TemperatureEquation.cs" />
     <Compile Include="UnitTests\TemperatureEquationTestClass.cs" />
+    <Compile Include="UnitTests\DirectionUnitTestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />

@@ -2,6 +2,7 @@
 using CavemanLand.Models;
 using CavemanLand.Utility;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace CavemanLand.UnitTests
@@ -199,6 +200,74 @@ namespace CavemanLand.UnitTests
                 }
             }
         }      
+
+		// River Direction Tests
+		[Test()]
+        public void FlowRateIsWithinRange()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					Assert.GreaterOrEqual(tileArray[x, z].rivers.flowRate, 0.0);
+					if(tileArray[x, z].rivers.flowDirection == Direction.CardinalDirections.none){
+						Assert.AreEqual(tileArray[x, z].rivers.flowRate, 0.0);
+					}
+                }
+            }
+        }
+
+		[Test()]
+        public void DownhillFlowIsCorrect()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					Direction.CardinalDirections direction = tileArray[x, z].rivers.flowDirection;
+					Coordinates myPosition = new Coordinates(x, z);
+					if (!direction.Equals(Direction.CardinalDirections.none))
+					{
+						Coordinates downhill = myPosition.findCoordinatesInCardinalDirection(direction);
+						Assert.Less(tileArray[downhill.x, downhill.z].terrain.elevation, tileArray[x, z].terrain.elevation, "Cell: " + myPosition + " - downhill: " + downhill);
+					}
+					else
+					{
+						List<Direction.CardinalDirections> around = myPosition.getCardinalDirectionsAround();
+						foreach (Direction.CardinalDirections dir in around)
+						{
+							Coordinates coor = myPosition.findCoordinatesInCardinalDirection(dir);
+							Assert.LessOrEqual(tileArray[x, z].terrain.elevation, tileArray[coor.x, coor.z].terrain.elevation, "Cell: " + myPosition + " - downhill: " + dir);
+						}
+					}
+                }
+            }
+        }
+
+		[Test()]
+        public void DownhillAndUphillFlowMatch()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					List<Direction.CardinalDirections> uphills = tileArray[x, z].rivers.upstreamDirections;
+					if (uphills.Count > 0)
+					{
+						Coordinates myPosition = new Coordinates(x, z);
+						foreach(Direction.CardinalDirections direction in uphills)
+						{
+							Coordinates uphill = myPosition.findCoordinatesInCardinalDirection(direction);
+							Assert.True(Direction.isOpposite(tileArray[uphill.x, uphill.z].rivers.flowDirection, direction));
+						}
+					}
+                }
+            }
+        }
+
 
         private void verifyExpectedJson(string expectedPath, string actualPath)
 		{
