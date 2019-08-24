@@ -254,7 +254,7 @@ namespace CavemanLand.Models
 		{
 			double[] array = new double[Precipitation.HUMIDITY_CROSS_SECTIONS];
 			for (int i = 0; i < Precipitation.HUMIDITY_CROSS_SECTIONS; i++){
-				array[i] = humidities[i][x, z];
+				array[i] = Math.Round(humidities[i][x, z], ROUND_TO);
 			}
 			return array;
 		}

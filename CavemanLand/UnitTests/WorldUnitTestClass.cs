@@ -130,6 +130,76 @@ namespace CavemanLand.UnitTests
             }
         }
 
+		// Precipitation Layer generation tests
+
+		[Test()]
+        public void HumiditiesAreWithinRange()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					Assert.AreEqual(tileArray[x, z].precipitation.humidities.Length, 6);
+					for (int h = 0; h < tileArray[x, z].precipitation.humidities.Length; h++){
+						assertBetween(tileArray[x, z].precipitation.humidities[h], 0.0, 12.0);
+					}
+                }
+            }
+        }
+
+		[Test()]
+        public void PrintYearHumidity()
+        {
+            Tile[,] tileArray = world.getTileArray();
+			string output = "";
+			int x = 0;
+			int z = 0;
+			for (int h = 0; h < tileArray[x, z].precipitation.humidities.Length; h++)
+            {
+                Console.Write(tileArray[x, z].precipitation.humidities[h] + " - ");
+            }
+			Console.Write("\n");
+			for (int d = 1; d < WorldDate.DAYS_PER_YEAR; d++)
+			{
+				output += tileArray[x, z].precipitation.getHumidity(d) + ", ";
+			}
+			Console.WriteLine("Humidity Year: ");
+			Console.WriteLine(output);
+        } 
+
+		[Test()]
+        public void GetHumidityFunctionWorks()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					for (int d = 1; d <= WorldDate.DAYS_PER_YEAR - 20; d++)
+					{
+						double first = tileArray[x, z].precipitation.humidities[(d - 1) / 20];
+						double second = tileArray[x, z].precipitation.humidities[((d - 1) / 20) + 1];
+						if(first > second){
+							assertBetween(tileArray[x, z].precipitation.getHumidity(d), second - .001, first + .001, "Cell (" + x + ", " + z + ") day - " + d);
+						} else {
+							assertBetween(tileArray[x, z].precipitation.getHumidity(d), first - .001, second + .001, "Cell (" + x + ", " + z + ") day - " + d);
+						}                  
+					}
+					for (int d = WorldDate.DAYS_PER_YEAR - 20 + 1; d <= WorldDate.DAYS_PER_YEAR; d++)
+                    {
+						double first = tileArray[x, z].precipitation.humidities[(d - 1) / 20];
+                        double second = tileArray[x, z].precipitation.humidities[0];
+                        if(first > second){
+                            assertBetween(tileArray[x, z].precipitation.getHumidity(d), second - .001, first + .001, "Cell (" + x + ", " + z + ") day - " + d);
+                        } else {
+                            assertBetween(tileArray[x, z].precipitation.getHumidity(d), first - .001, second + .001, "Cell (" + x + ", " + z + ") day - " + d);
+                        } 
+                    }
+                }
+            }
+        }      
+
         private void verifyExpectedJson(string expectedPath, string actualPath)
 		{
 			string expectedJson = MyJsonFileInteractor.loadJsonFileToString(expectedPath);
@@ -153,6 +223,12 @@ namespace CavemanLand.UnitTests
         {
             Assert.LessOrEqual(value, higherBound, "Value [" + value + "] is above higherBound [" + higherBound + "]");
             Assert.GreaterOrEqual(value, lowerBound, "Value [" + value + "] is below lowerBound [" + lowerBound + "]");
+        }
+
+		private void assertBetween(double value, double lowerBound, double higherBound, string message)
+        {
+            Assert.LessOrEqual(value, higherBound, "Value [" + value + "] is above higherBound [" + higherBound + "] - " + message);
+            Assert.GreaterOrEqual(value, lowerBound, "Value [" + value + "] is below lowerBound [" + lowerBound + "] - " + message);
         }
        
     }

@@ -1,4 +1,5 @@
 ﻿using CavemanLand.Utility;
+using System;
 
 namespace CavemanLand.Models.TileSubClasses
 {
@@ -16,14 +17,15 @@ namespace CavemanLand.Models.TileSubClasses
 
         public double getHumidity(int day)
 		{
-			int section = (int) (day - 1) / HUMIDITY_CROSS_SECTIONS;
-			int remainder = (day - 1) % HUMIDITY_CROSS_SECTIONS;
+			int section = (int) (day - 1) / MAX_REMAINDER;
+			int remainder = (day - 1) % MAX_REMAINDER;
 			int nextSection = section + 1;
 			if (section == 5){
 				nextSection = 0;
 			}
 
-			return humidities[section] * ((MAX_REMAINDER - remainder) / MAX_REMAINDER) + humidities[nextSection] * (remainder / MAX_REMAINDER);
+			double maxRemainder = (double) MAX_REMAINDER;
+			return Math.Round(humidities[section] * ((MAX_REMAINDER - remainder) / maxRemainder) + humidities[nextSection] * (remainder / maxRemainder), World.ROUND_TO);
 		}
     }
 }
