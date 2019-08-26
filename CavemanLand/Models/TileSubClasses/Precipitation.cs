@@ -27,5 +27,10 @@ namespace CavemanLand.Models.TileSubClasses
 			double maxRemainder = (double) MAX_REMAINDER;
 			return Math.Round(humidities[section] * ((MAX_REMAINDER - remainder) / maxRemainder) + humidities[nextSection] * (remainder / maxRemainder), World.ROUND_TO);
 		}
+
+        public void setDailyRain()
+		{
+			
+		}
     }
 }

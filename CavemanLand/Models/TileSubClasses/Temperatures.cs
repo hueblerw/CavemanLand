@@ -1,4 +1,5 @@
 ﻿using CavemanLand.Generators;
+using CavemanLand.Utility;
 
 namespace CavemanLand.Models.TileSubClasses
 {
@@ -20,5 +21,13 @@ namespace CavemanLand.Models.TileSubClasses
 			this.variance = variance;
 			temperatureEquation = new TemperatureEquation(low, high, summerLength, variance);
         }
+        
+		public void generateYearsTemps(int year){
+			int[] temps = new int[WorldDate.DAYS_PER_YEAR];
+			for (int day = 1; day <= temps.Length; day++){
+				temps[day - 1] = temperatureEquation.getTodaysTemp(day);
+			}
+			dailyTemps = new DailyTemps(year, temps);
+		}
     }
 }

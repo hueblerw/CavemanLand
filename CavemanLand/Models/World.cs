@@ -38,6 +38,8 @@ namespace CavemanLand.Models
     		private const double HUMIDITY_MIN = 0.0;
     		private const double HUMIDITY_MAX = 12.0;
     		private const double HUMIDITY_CHANGE_BY = 2.0;
+    		private const double RAINFALL_MULTIPLIER = 1.5;
+            private const int RAINFALL_POWER = 2;
     		// Rivers
     		private const double FLOW_RATE_MULT = 0.2;
             
@@ -77,7 +79,8 @@ namespace CavemanLand.Models
 			randy = new Random();
 			maxDiff = 0.0;
 			tileArray = generateTileArray();
-            // Once the basic stats are generated - generate 20 years of weather
+			// Once the basic stats are generated - generate 20 years of weather
+			generateYearOfWeather(1);
             // This finishes the rivers, and gives the data to generate the habitats.
             // Then Generate 2 more years of weather to start the game.
         }
@@ -335,6 +338,64 @@ namespace CavemanLand.Models
 			}
 
 			return upstream;
+		}
+
+        private void generateYearOfWeather(int year)
+		{
+			// Best plan seems to be update the year to be the current one held in file
+			// but if habitat sum != 100.0 then slowly build it.
+			double[][,] rainDays = new double[WorldDate.DAYS_PER_YEAR][,];
+			double[][,] snowfall = new double[WorldDate.DAYS_PER_YEAR][,];
+			for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
+			{
+				rainDays[day - 1] = generateDayOfWeather(year, day, out snowfall[day - 1]);
+			}
+			for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
+            {
+				calculateSpecialPrecip(rainDays, snowfall);
+            }
+
+		}
+            
+        private double[,] generateDayOfWeather(int year, int day, out double[,] snowfall)
+		{
+			double startingValue = randy.NextDouble() * HUMIDITY_MAX;
+			double[,] dailyRandomMap = doubleLayerGenerator.GenerateWorldLayer(startingValue, 0.0, HUMIDITY_MAX, RAINFALL_MULTIPLIER, true);
+            double[,] precip = new double[x, z];
+			snowfall = new double[x, z];
+            // now i need to subtract the arrays and divide by humidities to generate a percentage
+            // Then if > 0, multiply that percentage by a rainfall constant. (perhaps after squaring or cubing the percentage?
+            for (int x = 0; x < this.x; x++)
+            {
+                for (int z = 0; z < this.z; z++)
+                {
+					if (day == 1)
+					{
+						tileArray[x, z].temperatures.generateYearsTemps(year);
+					}
+					precip[x, z] = (dailyRandomMap[x, z] + tileArray[x, z].precipitation.getHumidity(day) - HUMIDITY_MAX) / HUMIDITY_MAX;
+                    if (precip[x, z] < 0.0)
+                    {
+                        precip[x, z] = 0.0;
+                    }
+                    else
+                    {
+						double precipitation = Math.Round(Math.Pow(precip[x, z], RAINFALL_POWER) * RAINFALL_MULTIPLIER, ROUND_TO);
+						if (tileArray[x, z].temperatures.dailyTemps.days[day - 1] > 32){
+							precip[x, z] = precipitation;
+						} else {
+							snowfall[x, z] = precipitation;
+						}
+                    }
+                }
+            }
+
+            return precip;
+		}
+
+		private void calculateSpecialPrecip(double[][,] rainDays, double[][,] snowfall)
+		{
+			
 		}
 
     }

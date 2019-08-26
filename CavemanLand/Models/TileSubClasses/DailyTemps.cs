@@ -10,9 +10,9 @@
         }
 
 		public DailyTemps(int year, int[] days)
-        {
+		{
 			this.year = year;
 			this.days = days;
-        }
+		}
     }
 }
