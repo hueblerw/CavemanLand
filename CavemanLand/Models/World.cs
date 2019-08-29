@@ -42,9 +42,11 @@ namespace CavemanLand.Models
             private const int RAINFALL_POWER = 2;
     		// Rivers
     		private const double FLOW_RATE_MULT = 0.2;
+		    private const double MELT_CONST = ((3.0 * 1.8) / 25.4);
             
         // General Constants
 		public const int ROUND_TO = 2;
+		private const double FREEZING_POINT = 32.0;
 		private const string SAVE_FILE_LOCATION = @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/";
 
         // Variables
@@ -348,16 +350,17 @@ namespace CavemanLand.Models
 			double[][,] snowfall = new double[WorldDate.DAYS_PER_YEAR][,];
 			for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
 			{
-				rainDays[day - 1] = generateDayOfWeather(year, day, out snowfall[day - 1]);
+				rainDays[day - 1] = generateDayOfTempsAndPrecipitation(year, day, out snowfall[day - 1]);
 			}
-			for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
-            {
-				calculateSpecialPrecip(rainDays, snowfall);
-            }
-
+            // SKIP THIS IF OCEAN
+			double[,] lastSnowOfYear;
+			double[,] lastWaterOfYear = getLastDayOfPreviousYear(year, out lastSnowOfYear);
+			double[][,] snowCover = new double[WorldDate.DAYS_PER_YEAR][,];
+			double[][,] surfaceWater = calculateWaterData(rainDays, snowfall, out snowCover, lastSnowOfYear, lastWaterOfYear);
+			saveYearOfWeather(year, rainDays, snowfall, snowCover, surfaceWater);
 		}
             
-        private double[,] generateDayOfWeather(int year, int day, out double[,] snowfall)
+        private double[,] generateDayOfTempsAndPrecipitation(int year, int day, out double[,] snowfall)
 		{
 			double startingValue = randy.NextDouble() * HUMIDITY_MAX;
 			double[,] dailyRandomMap = doubleLayerGenerator.GenerateWorldLayer(startingValue, 0.0, HUMIDITY_MAX, RAINFALL_MULTIPLIER, true);
@@ -371,6 +374,7 @@ namespace CavemanLand.Models
                 {
 					if (day == 1)
 					{
+						// GENERATES THE DAILY TEMPS
 						tileArray[x, z].temperatures.generateYearsTemps(year);
 					}
 					precip[x, z] = (dailyRandomMap[x, z] + tileArray[x, z].precipitation.getHumidity(day) - HUMIDITY_MAX) / HUMIDITY_MAX;
@@ -392,10 +396,191 @@ namespace CavemanLand.Models
 
             return precip;
 		}
-
-		private void calculateSpecialPrecip(double[][,] rainDays, double[][,] snowfall)
+        
+		private double[][,] calculateWaterData(double[][,] rainDays, double[][,] snowfall, out double[][,] snowCover, double[,] lastSnowOfYear, double[,] lastWaterOfYear)
 		{
-			
+			double[][,] surfaceWater = new double[WorldDate.DAYS_PER_YEAR][,];
+			snowCover = new double[WorldDate.DAYS_PER_YEAR][,];
+			for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
+			{
+				surfaceWater[day - 1] = new double[this.x, this.z];
+				snowCover[day - 1] = new double[this.x, this.z];
+				for (int x = 0; x < this.x; x++)
+				{
+					for (int z = 0; z < this.z; z++)
+					{
+						if (tileArray[x, z].terrain.oceanPercent < 1.0)
+						{
+							double yesterdaysSnow;
+							double yesterdaysWater;
+
+							if (day == 1)
+							{
+								yesterdaysSnow = lastSnowOfYear[x, z];
+								yesterdaysWater = lastWaterOfYear[x, z];
+							}
+							else
+							{
+								yesterdaysSnow = snowCover[WorldDate.getYesterday(day) - 1][x, z];
+								yesterdaysWater = surfaceWater[WorldDate.getYesterday(day) - 1][x, z];
+							}
+
+							int todaysTemp = tileArray[x, z].temperatures.dailyTemps.days[day - 1];
+
+							double snowMelt = Math.Min(Math.Max((todaysTemp - FREEZING_POINT) * MELT_CONST, 0.0), yesterdaysSnow);
+							snowCover[day - 1][x, z] = Math.Round(Math.Max(yesterdaysSnow + snowfall[day - 1][x, z] - snowMelt, 0.0), ROUND_TO);
+							double humid = tileArray[x, z].precipitation.getHumidity(day);
+							double flowAway = 0.0;
+							if (tileArray[x, z].rivers.flowDirection != Direction.CardinalDirections.none){
+								flowAway = tileArray[x, z].rivers.flowRate;
+							}
+                            
+							double waterRemoved = calculateSoilAbsorption(x, z) + flowAway + calculateEvaporation(yesterdaysWater, todaysTemp, humid, determineWeather(rainDays[day - 1][x, z], humid));
+							double waterGained = rainDays[day - 1][x, z] + getUpstreamFlow(day, x, z, surfaceWater, lastWaterOfYear) + snowMelt;
+							surfaceWater[day - 1][x, z] = Math.Round(Math.Max(yesterdaysWater - waterRemoved + waterGained, 0.0), ROUND_TO);
+						}
+					}
+				}
+			}
+			return surfaceWater;
+		}
+        
+		private double calculateSoilAbsorption(int x, int z)
+        {
+			return ((randy.NextDouble() + .2) * (1.0 - tileArray[x, z].terrain.oceanPercent) * (1.0 - tileArray[x, z].terrain.hillPercent));
+        }
+
+		private double calculateEvaporation(double currentWater, int temp, double humidity, string weather)
+        {
+            double xs;
+            double x;
+            double pws;
+            double pw;
+			double evaporation;
+            double multiplier = 1.0;
+
+            switch (weather)
+            {
+                case "cloudy":
+                    multiplier = 16.0;
+                    break;
+                case "sunny":
+                    multiplier = 48.0;
+                    break;
+            }
+            pws = Math.Exp(77.345 + 0.0057 * ((temp + 459.67) * (5.0 / 9.0)) - 7235.0 / ((temp + 459.67) * (5.0 / 9.0))) / (Math.Pow((temp + 459.67) * (5.0 / 9.0), 8.2));
+            xs = 0.62198 * pws / (101325.0 - pws);
+            if (weather != "rainy")
+            {
+                pw = (humidity / multiplier) * pws;
+            }
+            else
+            {
+                pw = pws;
+            }
+            x = 0.62198 * pw / (101325.0 - pw);
+			evaporation = (float)(((1260.0 * 24.0 * Math.Sqrt(2.0 * currentWater * 23.6) / Math.Pow(6.0, .25)) * (xs - x)) / 23600.0);
+
+            return evaporation;
+        }
+        
+		private string determineWeather(double rainfall, double humidity)
+        {
+            string weather;
+            if (rainfall > 0)
+            {
+                weather = "rainy";
+            }
+            else
+            {
+                weather = determineCloudy(humidity);
+            }
+
+            return weather;
+        }
+
+        // Determine if it is cloudy or not
+		private string determineCloudy(double humidity)
+        {
+            string weather;
+            double prob = Math.Pow(0.5, humidity / 5.0);
+
+            if (randy.NextDouble() < prob)
+            {
+                weather = "sunny";
+            }
+            else
+            {
+                weather = "cloudy";
+            }
+
+            return weather;
+        }
+
+		private double getUpstreamFlow(int day, int x, int z, double[][,] surfaceWater, double[,] lastWaterOfYear)
+		{
+			double upstreamFlow = 0.0;
+			List<Direction.CardinalDirections> directions = tileArray[x, z].rivers.upstreamDirections;
+			Coordinates myPosition = new Coordinates(x, z);
+            foreach (Direction.CardinalDirections direction in directions)
+			{
+                Coordinates coordinates = myPosition.findCoordinatesInCardinalDirection(direction);
+				double flow = tileArray[coordinates.x, coordinates.z].rivers.flowRate;
+				double yesterdayUpstreamWater;
+
+				if (day == 1){
+					yesterdayUpstreamWater = lastWaterOfYear[coordinates.x, coordinates.z];
+				} else {
+					yesterdayUpstreamWater = surfaceWater[WorldDate.getYesterday(day) - 1][coordinates.x, coordinates.z];
+				}
+
+				if (yesterdayUpstreamWater > flow)
+				{
+					upstreamFlow += flow;
+				} else {
+					upstreamFlow += yesterdayUpstreamWater;
+				}
+			}
+
+			return upstreamFlow;
+		}
+
+		private void saveYearOfWeather(int year, double[][,] rainDays, double[][,] snowfall, double[][,] snowCover, double[][,] surfaceWater)
+		{
+			for (int x = 0; x < this.x; x++){
+				for (int z = 0; z < this.z; z++){
+					double[] rain = new double[WorldDate.DAYS_PER_YEAR];
+					double[] snowF = new double[WorldDate.DAYS_PER_YEAR];
+					double[] snowC = new double[WorldDate.DAYS_PER_YEAR];
+					double[] volume = new double[WorldDate.DAYS_PER_YEAR];
+					for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++){
+						rain[day] = Math.Round(rainDays[day][x, z], ROUND_TO);
+						snowF[day] = snowfall[day][x, z];
+						snowC[day] = snowCover[day][x, z];
+						volume[day] = surfaceWater[day][x, z];
+					}
+                    // GENERATES THE NEW DAILY RAIN & DAILY VOLUME
+					tileArray[x, z].precipitation.setDailyRain(new DailyRain(year, rain, snowF, snowC));
+					tileArray[x, z].rivers.dailyVolume = new DailyVolume(year, volume);
+				}
+			}
+		}
+
+		private double[,] getLastDayOfPreviousYear(int year, out double[,] lastSnowOfYear)
+		{
+			lastSnowOfYear = new double[this.x, this.z];
+			double[,] lastWaterOfYear = new double[this.x, this.z];
+            if (year > 1)
+			{
+				for (int x = 0; x < this.x; x++){
+					for (int z = 0; z < this.z; z++){
+						lastWaterOfYear[x, z] = tileArray[x, z].rivers.dailyVolume.volume[WorldDate.DAYS_PER_YEAR - 1];
+						lastSnowOfYear[x, z] = tileArray[x, z].precipitation.dailyRain.snowCover[WorldDate.DAYS_PER_YEAR - 1];
+					}
+				}
+			}
+
+			return lastWaterOfYear;
 		}
 
     }

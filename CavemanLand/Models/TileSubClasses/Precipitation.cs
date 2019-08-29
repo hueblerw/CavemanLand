@@ -28,9 +28,9 @@ namespace CavemanLand.Models.TileSubClasses
 			return Math.Round(humidities[section] * ((MAX_REMAINDER - remainder) / maxRemainder) + humidities[nextSection] * (remainder / maxRemainder), World.ROUND_TO);
 		}
 
-        public void setDailyRain()
+        public void setDailyRain(DailyRain dailyRain)
 		{
-			
+			this.dailyRain = dailyRain;
 		}
     }
 }

@@ -19,5 +19,17 @@ namespace CavemanLand.Utility
 		{
 			return "year: " + year + "\tday: " + day;
 		}
+        
+		public static int getYesterday(int day)
+        {
+            if (day == 1)
+            {
+                return WorldDate.DAYS_PER_YEAR;
+            }
+            else
+            {
+                return day - 1;
+            }
+        }
 	}
 }

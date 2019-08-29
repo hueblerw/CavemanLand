@@ -3,15 +3,15 @@
     public class DailyRain
     {
 		public int year;
-		public int[] precip;
-		public int[] snowfall;
-		public int[] snowCover;
+		public double[] precip;
+		public double[] snowfall;
+		public double[] snowCover;
 
         public DailyRain()
         {
         }
 
-		public DailyRain(int year, int[] precip, int[] snowfall, int[] snowCover)
+		public DailyRain(int year, double[] precip, double[] snowfall, double[] snowCover)
         {
 			this.year = year;
 			this.precip = precip;
