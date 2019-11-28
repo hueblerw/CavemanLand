@@ -281,6 +281,106 @@ namespace CavemanLand.UnitTests
             }
         }
 
+        // Test to verify that rain and snow are not on the same day
+		[Test()]
+        public void NoRainAndSnowOnSameDay()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++){
+						if (!tileArray[x, z].precipitation.dailyRain.precip[day - 1].Equals(0.0)){
+							Assert.AreEqual(0.0, tileArray[x, z].precipitation.dailyRain.snowfall[day - 1], 0.01, "snow on day: " + day + " - tile (" + x + ", " + z + ")");
+						} else if (!tileArray[x, z].precipitation.dailyRain.snowfall[day - 1].Equals(0.0)){
+							Assert.AreEqual(0.0, tileArray[x, z].precipitation.dailyRain.precip[day - 1], 0.01, "rain on day: " + day + " - tile (" + x + ", " + z + ")");
+						}
+					}
+                }
+            }
+        }
+
+        // Test ocean provinces never have snow cover or surface water
+		[Test()]
+        public void OceanNoCover()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+                    for (int day = 1; day <= WorldDate.DAYS_PER_YEAR; day++)
+                    {
+						if (tileArray[x, z].terrain.oceanPercent.Equals(1.0))
+						{
+							Assert.AreEqual(0.0, tileArray[x, z].precipitation.dailyRain.snowCover[day - 1]);
+                            Assert.AreEqual(0.0, tileArray[x, z].rivers.dailyVolume.volume[day - 1]);
+						}
+                    }
+                }
+            }
+        }
+
+		// Print Rainfall Sums
+        [Test()]
+        public void PrintYearlyRainfalls()
+        {
+            Tile[,] tileArray = world.getTileArray();
+			double[,] rainSums = new double[WORLDX, WORLDZ];
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					rainSums[x, z] = tileArray[x, z].precipitation.getRainForYear();
+                }
+            }
+
+			// SOMETHING IS WRONG WITH (0, 0) rainfall - it is getting wiped????
+			// Console.WriteLine("Rain Sums for the year");
+			// printArray<double>(rainSums);
+        }
+
+
+		// Print Average Surface Water
+        [Test()]
+        public void PrintAverageSurfaceWater()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            double[,] waterSums = new double[WORLDX, WORLDZ];
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					waterSums[x, z] = tileArray[x, z].rivers.dailyVolume.getAverageWaterLevel();
+                }
+            }
+
+			Console.WriteLine("Surface Water Average for the year");
+			printArray<double>(waterSums);
+        }
+
+        // Check that the previous years river and snow cover levels are being passed on correctly.
+
+
+        // Check that after world generation all habitats are at 100% & ocean percents == ocean habitat percent
+		[Test()]
+        public void FullHabitatsTest()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					Assert.AreEqual(tileArray[x, z].habitats.calculatePercentEmpty(), 0, "tile (" + x + ", " + z + ") is not full.");
+					Assert.AreEqual(tileArray[x, z].habitats.typePercents[13], (int) (tileArray[x, z].terrain.oceanPercent * 100), "tile (" + x + ", " + z + ") oceanPercent and habitat percent that is ocean don't match");
+                }
+            }
+            
+        }
+
+        // PRIVATE
+              
 
         private void verifyExpectedJson(string expectedPath, string actualPath)
 		{
@@ -311,6 +411,20 @@ namespace CavemanLand.UnitTests
         {
             Assert.LessOrEqual(value, higherBound, "Value [" + value + "] is above higherBound [" + higherBound + "] - " + message);
             Assert.GreaterOrEqual(value, lowerBound, "Value [" + value + "] is below lowerBound [" + lowerBound + "] - " + message);
+        }
+
+		private void printArray<T>(T[,] array)
+        {
+            string output = "";
+            for (int z = 0; z < WORLDZ; z++)
+            {
+                for (int x = 0; x < WORLDX; x++)
+                {
+                    output += array[x, z] + "\t";
+                }
+                output += "\n";
+            }
+            Console.Write(output);
         }
        
     }

@@ -22,3 +22,12 @@ Plan:
 	- Habitat is an array of 13 habitat types in json file.  Change this to a true Object, so json-ifies correctly.
 	- Similarly, for game, crops, grazing, etc.
 	- PROBLEM:  Most info flows inward from above.  This is easy to store.  Rivers and habitats data use other daily data.  Rivers particularly use this data from OTHER squares.  This seems like the real technical problem I am facing in terms of efficiency.  Think on solutions:
+
+
+TODO:
+Generate Minerals
+Generate many years in a row.
+Generate Habitats
+
+BUGS:
+Why is (0, 0) not producing rain???

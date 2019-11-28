@@ -14,5 +14,13 @@
 			this.year = year;
 			this.days = days;
 		}
+
+		public double getAvgTemp(){
+			int sum = 0;
+			for (int day = 0; day < days.Length; day++){
+				sum += days[day];
+			}
+			return (double) sum / days.Length;
+		}
     }
 }

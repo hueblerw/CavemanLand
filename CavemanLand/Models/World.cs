@@ -11,6 +11,7 @@ namespace CavemanLand.Models
     public class World
     {
         // World Generation Constants
+		public const int YEARS_TO_FULL_HABITAT_REGROWTH = 20;
 		private const double UNLIMITED_MIN = -1000.0;
 		private const double UNLIMITED_MAX = -UNLIMITED_MIN;
             // Elevation
@@ -24,7 +25,7 @@ namespace CavemanLand.Models
             private const int HIGH_TEMP_MAX = 115;
 		    private const int TEMP_CHANGE_BY = 2;
     		private const double STARTING_HIGH_TEMP_RANGE = 35.0;
-		    private const double STARTING_HIGH_TEMP_MIN = 45.0;
+		    private const double STARTING_HIGH_TEMP_MIN = 50.0;
     		private const double STARTING_LOW_TEMP_RANGE = 30.0;
             private const double STARTING_LOW_TEMP_MIN = 5.0;
     		private const int SUMMER_LENGTH_MIN = 36;
@@ -38,7 +39,7 @@ namespace CavemanLand.Models
     		private const double HUMIDITY_MIN = 0.0;
     		private const double HUMIDITY_MAX = 12.0;
     		private const double HUMIDITY_CHANGE_BY = 2.0;
-    		private const double RAINFALL_MULTIPLIER = 1.5;
+    		private const double RAINFALL_MULTIPLIER = 3.0;
             private const int RAINFALL_POWER = 2;
     		// Rivers
     		private const double FLOW_RATE_MULT = 0.2;
@@ -82,9 +83,10 @@ namespace CavemanLand.Models
 			maxDiff = 0.0;
 			tileArray = generateTileArray();
 			// Once the basic stats are generated - generate 20 years of weather
-			generateYearOfWeather(1);
-            // This finishes the rivers, and gives the data to generate the habitats.
-            // Then Generate 2 more years of weather to start the game.
+			// This finishes the rivers, and gives the data to generate the habitats.
+			for (int year = 0; year < YEARS_TO_FULL_HABITAT_REGROWTH; year++){
+				generateYearOfWeather(year + 1);
+			}
         }
 
         // This constructor is intended only for loading extant worlds from File
@@ -192,6 +194,7 @@ namespace CavemanLand.Models
 					tiles[x, z].precipitation = new Precipitation(convertThisTilesHumiditiesToArray(x, z, humidities));
 					List<Direction.CardinalDirections> upstreamDirections = getUpstreamFromDownstream(x, z, downstreamDirections);
 					tiles[x, z].rivers = new Rivers(downstreamDirections[x, z], upstreamDirections, flowRates[x, z]);
+					tiles[x, z].habitats = new Habitats(oceanPer);
                     // Then Minerals
 				}
 			}
@@ -284,7 +287,7 @@ namespace CavemanLand.Models
 			double[][,] humidities = new double[Precipitation.HUMIDITY_CROSS_SECTIONS][,];
 			for (int i = 0; i < Precipitation.HUMIDITY_CROSS_SECTIONS; i++){
 				double startingValue = randy.NextDouble() * HUMIDITY_MAX + HUMIDITY_MIN;
-                humidities[i] = doubleLayerGenerator.GenerateWorldLayer(HUMIDITY_MIN, HUMIDITY_MAX, HUMIDITY_CHANGE_BY, startingValue, false);
+				humidities[i] = doubleLayerGenerator.GenerateWorldLayer(HUMIDITY_MIN, HUMIDITY_MAX, HUMIDITY_CHANGE_BY, startingValue, false);
 			}
 			return humidities;
         }
@@ -377,14 +380,10 @@ namespace CavemanLand.Models
 						// GENERATES THE DAILY TEMPS
 						tileArray[x, z].temperatures.generateYearsTemps(year);
 					}
-					precip[x, z] = (dailyRandomMap[x, z] + tileArray[x, z].precipitation.getHumidity(day) - HUMIDITY_MAX) / HUMIDITY_MAX;
-                    if (precip[x, z] < 0.0)
+					double humidityDiff = Math.Max((dailyRandomMap[x, z] + tileArray[x, z].precipitation.getHumidity(day) - HUMIDITY_MAX) / HUMIDITY_MAX, 0.0);
+					if (!humidityDiff.Equals(0.0))
                     {
-                        precip[x, z] = 0.0;
-                    }
-                    else
-                    {
-						double precipitation = Math.Round(Math.Pow(precip[x, z], RAINFALL_POWER) * RAINFALL_MULTIPLIER, ROUND_TO);
+						double precipitation = Math.Round(Math.Pow(humidityDiff, RAINFALL_POWER) * RAINFALL_MULTIPLIER, ROUND_TO);
 						if (tileArray[x, z].temperatures.dailyTemps.days[day - 1] > 32){
 							precip[x, z] = precipitation;
 						} else {
@@ -409,6 +408,9 @@ namespace CavemanLand.Models
 				{
 					for (int z = 0; z < this.z; z++)
 					{
+						if (x == 0 && z == 0){
+							Console.Write(rainDays[day - 1][x, z] + " - ");
+						}
 						if (tileArray[x, z].terrain.oceanPercent < 1.0)
 						{
 							double yesterdaysSnow;
@@ -562,12 +564,19 @@ namespace CavemanLand.Models
                     // GENERATES THE NEW DAILY RAIN & DAILY VOLUME
 					tileArray[x, z].precipitation.setDailyRain(new DailyRain(year, rain, snowF, snowC));
 					tileArray[x, z].rivers.dailyVolume = new DailyVolume(year, volume);
+					// HABITAT UPDATE
+					double avgTemp = tileArray[x, z].temperatures.dailyTemps.getAvgTemp();
+					double totalPrecipitation = tileArray[x, z].precipitation.getRainForYear();
+					double avgRiverLevel = tileArray[x, z].rivers.dailyVolume.getAverageWaterLevel();
+					double oceanPer = tileArray[x, z].terrain.oceanPercent;
+					tileArray[x, z].habitats.growHabitats(avgTemp, totalPrecipitation, avgRiverLevel, oceanPer.Equals(1.0), determineIsIceSheet(snowC));
 				}
 			}
 		}
 
 		private double[,] getLastDayOfPreviousYear(int year, out double[,] lastSnowOfYear)
 		{
+			// THIS NEEDS TO ACTUALLY GRAB IT FROM THE PREVIOUS YEAR OF WEATHER AND WE SHOULD BE GOOD TO LOOP THE YEARS
 			lastSnowOfYear = new double[this.x, this.z];
 			double[,] lastWaterOfYear = new double[this.x, this.z];
             if (year > 1)
@@ -581,6 +590,15 @@ namespace CavemanLand.Models
 			}
 
 			return lastWaterOfYear;
+		}
+
+		private bool determineIsIceSheet(double[] snowC){
+			for (int day = 0; day < snowC.Length; day++){
+				if (snowC.Equals(0.0)){
+					return false;
+				}
+			}
+			return true;
 		}
 
     }

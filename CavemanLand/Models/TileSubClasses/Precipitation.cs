@@ -32,5 +32,10 @@ namespace CavemanLand.Models.TileSubClasses
 		{
 			this.dailyRain = dailyRain;
 		}
+
+        public double getRainForYear()
+		{
+			return dailyRain.getRainForYear();
+		}
     }
 }
