@@ -27,7 +27,7 @@ Plan:
 TODO:
 Generate Minerals
 Generate many years in a row.
-Generate Habitats
 
 BUGS:
 Why is (0, 0) not producing rain???
+We are at 1:24 to generate a world of 200 x 200.  Can it be improved?

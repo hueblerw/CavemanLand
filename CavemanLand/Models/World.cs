@@ -144,7 +144,8 @@ namespace CavemanLand.Models
 
 		public void generateNewYear()
 		{
-			throw new NotImplementedException();
+			currentDate.year++;
+			generateYearOfWeather(currentDate.year);
 		}
 
 		public Tile[,] getTileArray()

@@ -1,0 +1,78 @@
+{
+	// Artic
+	"Artic Desert": {
+		"avgTemp": 42.5,
+		"tempPlusMinus": 10.0,
+		"rain": 12.5,
+		"rainPlusMinus": 7.5
+	},
+	"Tundra": {
+		"avgTemp": 40.0,
+		"tempPlusMinus": 10.0,
+		"rain": 30.0,
+		"rainPlusMinus": 10.0
+	},
+	"Boreal": {
+		"avgTemp": 40.0,
+		"tempPlusMinus": 10.0,
+		"rain": 55.0,
+		"rainPlusMinus": 15.0
+	},
+	"Artic Marsh": {
+		"avgTemp": 42.5,
+		"tempPlusMinus": 10.0,
+		"rain": 70.0,
+		"rainPlusMinus": 15.0
+	},
+	// Temperate
+	"Desert": {
+		"avgTemp": 65.0,
+		"tempPlusMinus": 10.0,
+		"rain": 12.5,
+		"rainPlusMinus": 7.5
+	},
+	"Plains": {
+		"avgTemp": 65.0,
+		"tempPlusMinus": 10.0,
+		"rain": 30.0,
+		"rainPlusMinus": 10.0
+	},
+	"Forest": {
+		"avgTemp": 62.5,
+		"tempPlusMinus": 10.0,
+		"rain": 55.0,
+		"rainPlusMinus": 15.0
+	},
+
+	"Swamp": {
+		"avgTemp": 62.5,
+		"tempPlusMinus": 10.0,
+		"rain": 70.0,
+		"rainPlusMinus": 15.0
+	},
+	// Tropical
+	"Hot Desert": {
+		"avgTemp": 85.0,
+		"tempPlusMinus": 10.0,
+		"rain": 12.5,
+		"rainPlusMinus": 7.5
+	},
+	"Savannah": {
+		"avgTemp": 85.0,
+		"tempPlusMinus": 10.0,
+		"rain": 30.0,
+		"rainPlusMinus": 10.0
+	},
+	"Monsoon Forest": {
+		"avgTemp": 85.0,
+		"tempPlusMinus": 10.0,
+		"rain": 55.0,
+		"rainPlusMinus": 15.0
+	},
+	"Rainforest": {
+		"avgTemp": 85.0,
+		"tempPlusMinus": 10.0,
+		"rain": 70.0,
+		"rainPlusMinus": 15.0
+	}
+}

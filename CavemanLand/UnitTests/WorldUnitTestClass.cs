@@ -49,6 +49,7 @@ namespace CavemanLand.UnitTests
 			World world2 = new World(50, 50);
             stopWatch.Stop();
 			TimeSpan ts = stopWatch.Elapsed;
+			Console.WriteLine("\n\n");
 			Console.WriteLine("(50, 50) World Creation Time: " + ts);
 			stopWatch.Reset();
 
@@ -56,6 +57,7 @@ namespace CavemanLand.UnitTests
 			world2 = new World(100, 100);
             stopWatch.Stop();
             ts = stopWatch.Elapsed;
+			Console.WriteLine("\n\n");
             Console.WriteLine("(100, 100) World Creation Time: " + ts);
 			stopWatch.Reset();
 
@@ -63,6 +65,7 @@ namespace CavemanLand.UnitTests
 			world2 = new World(100, 50);
             stopWatch.Stop();
             ts = stopWatch.Elapsed;
+			Console.WriteLine("\n\n");
             Console.WriteLine("(100, 50) World Creation Time: " + ts);
 			stopWatch.Reset();
 
@@ -70,7 +73,21 @@ namespace CavemanLand.UnitTests
 			world2 = new World(200, 200);
             stopWatch.Stop();
             ts = stopWatch.Elapsed;
+			Console.WriteLine("\n\n");
             Console.WriteLine("(200, 200) World Creation Time: " + ts);
+        }
+
+		[Test()]
+        public void nextYearTimingTest()
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            World world3 = new World(100, 100);
+			stopWatch.Start();
+			world.generateNewYear();
+            stopWatch.Stop();
+			TimeSpan ts = stopWatch.Elapsed;
+            Console.WriteLine("\n\n");
+            Console.WriteLine("(100, 100) World Next Year Generation Time: " + ts);
         }
 
         // Terrain generation tests
@@ -360,9 +377,6 @@ namespace CavemanLand.UnitTests
 			printArray<double>(waterSums);
         }
 
-        // Check that the previous years river and snow cover levels are being passed on correctly.
-
-
         // Check that after world generation all habitats are at 100% & ocean percents == ocean habitat percent
 		[Test()]
         public void FullHabitatsTest()
@@ -376,8 +390,25 @@ namespace CavemanLand.UnitTests
 					Assert.AreEqual(tileArray[x, z].habitats.typePercents[13], (int) (tileArray[x, z].terrain.oceanPercent * 100), "tile (" + x + ", " + z + ") oceanPercent and habitat percent that is ocean don't match");
                 }
             }
-            
         }
+
+		[Test()]
+        public void HabitatsAreWithinRange()
+        {
+            Tile[,] tileArray = world.getTileArray();
+            for (int x = 0; x < WORLDX; x++)
+            {
+                for (int z = 0; z < WORLDZ; z++)
+                {
+					for (int i = 0; i < tileArray[x, z].habitats.typePercents.Length; i++){
+						assertBetween(tileArray[x, z].habitats.typePercents[i], 0, 100);
+						assertBetween(tileArray[x, z].habitats.currentLevel[i], 0.0, 10.0);
+						assertBetween(tileArray[x, z].habitats.gameCurrentLevel[i], 0.0, 10.0);
+					}
+                }
+            }
+        }
+
 
         // PRIVATE
               
