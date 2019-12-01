@@ -17,8 +17,8 @@ namespace CavemanLand.Models.TileSubClasses
 		private const double QUALITY_MAX = 10.0;
         
 		public int[] typePercents;
-		public double[] currentLevel;
-		public double[] gameCurrentLevel;
+		public double currentLevel;
+		public double gameCurrentLevel;
 
 		private static Dictionary<int, string> habitatMapping;
 		private static Dictionary<string, Dictionary<string, double>> ideals;
@@ -34,7 +34,7 @@ namespace CavemanLand.Models.TileSubClasses
 			}
 			randy = new Random();
 			this.typePercents = new int[NUMBER_OF_HABITATS];
-			this.currentLevel = generateRandomLevels();
+			this.currentLevel = generateRandomLevel();
 			this.gameCurrentLevel = currentLevel;
 			// set oceanPercent
 			this.typePercents[13] = (int) (oceanPercent * 100);
@@ -68,34 +68,87 @@ namespace CavemanLand.Models.TileSubClasses
 						typePercents[randomHabitatIndex] = Math.Max(typePercents[randomHabitatIndex] - growthAmount, 0);
 						typePercents[favoredHabitatIndex] = Math.Min(typePercents[favoredHabitatIndex] + growthAmount, 100);
 						// quality reduced in lost habitat
-						currentLevel[randomHabitatIndex] = Math.Round(Math.Max(currentLevel[randomHabitatIndex] - growthAmount * QUALITY_CHANGE_MULTIPLIER, QUALITY_MIN), World.ROUND_TO);
-						if (currentLevel[randomHabitatIndex] < gameCurrentLevel[randomHabitatIndex])
+						currentLevel = Math.Round(Math.Max(currentLevel - growthAmount * QUALITY_CHANGE_MULTIPLIER, QUALITY_MIN), World.ROUND_TO);
+						if (currentLevel < gameCurrentLevel)
 						{
-							gameCurrentLevel[randomHabitatIndex] = Math.Round(Math.Max(growthAmount * QUALITY_CHANGE_MULTIPLIER, QUALITY_MIN), World.ROUND_TO);
+							gameCurrentLevel = Math.Round(Math.Max(growthAmount * QUALITY_CHANGE_MULTIPLIER, QUALITY_MIN), World.ROUND_TO);
 						}
 					}
 				}
 				// quality increased
                 double change = getQualityChange(favoredHabitatIndex, avgTemp, totalPrecipitation, avgRiverLevel, isIceSheet);
-                double newLevel = Math.Round(currentLevel[favoredHabitatIndex] + change, World.ROUND_TO);
-                double newGameLevel = Math.Round(gameCurrentLevel[favoredHabitatIndex] + change, World.ROUND_TO);
-                currentLevel[favoredHabitatIndex] = Math.Min(Math.Max(QUALITY_MIN, newLevel), QUALITY_MAX);
-				gameCurrentLevel[favoredHabitatIndex] = Math.Min(Math.Max(QUALITY_MIN, newGameLevel), QUALITY_MAX);
+                double newLevel = Math.Round(currentLevel + change, World.ROUND_TO);
+                double newGameLevel = Math.Round(gameCurrentLevel + change, World.ROUND_TO);
+                currentLevel = Math.Min(Math.Max(QUALITY_MIN, newLevel), QUALITY_MAX);
+				gameCurrentLevel = Math.Min(Math.Max(QUALITY_MIN, newGameLevel), QUALITY_MAX);
 			}
 		}
+
+		public double getGrazing(double last5Rain, int todaysTemp, out double grass){
+			double plainsPercentage = 0.0;
+			double desertPercentage = 0.0;
+			for (int i = 0; i < 12; i += 4){
+				desertPercentage += typePercents[i] * 0.01;
+				plainsPercentage += typePercents[i + 1] * 0.01;
+			}
+
+			grass = SubHabitat.getGrass(currentLevel, plainsPercentage, desertPercentage, last5Rain, todaysTemp);
+			return SubHabitat.getGrazing(grass);
+		}      
+        
+		public int getTrees()
+        {
+			double forestPercantage = 0.0;
+            double swampPercentage = 0.0;
+            for (int i = 0; i < 12; i += 4)
+            {
+				forestPercantage += typePercents[i + 2] * 0.01;
+				swampPercentage += typePercents[i + 3] * 0.01;
+            }
+
+            return SubHabitat.getTreesOnTile(forestPercantage, swampPercentage, currentLevel);
+        }
+
+		public double getSeeds(double grass, int trees)
+        {
+			if (trees != 0){
+				double coldPercent = .01 * (typePercents[2] + typePercents[3]);
+                double hotPercent = .01 * (typePercents[10] + typePercents[11]);
+                double normalPercent = .01 * (typePercents[6] + typePercents[7]);
+				return SubHabitat.getSeeds(grass, trees, coldPercent, normalPercent, hotPercent);
+			} else {
+				return SubHabitat.getSeeds(grass, trees, 0.0, 0.0, 0.0);
+			}
+        }
+
+		public double Foilage(int trees, int temp)
+        {
+			double coldPercent = 0.0;
+			double normalPercent = 0.0;
+			double hotPercent = 0.0;
+			for (int i = 0; i < 4; i++)
+            {
+				coldPercent += typePercents[i] * 0.01;
+				normalPercent += typePercents[i + 4] * .01;
+				hotPercent += typePercents[i + 8] * 0.01;
+            }
+
+			return SubHabitat.getFoilage(currentLevel, temp, trees, coldPercent, normalPercent, hotPercent);
+        }
+
+		public Dictionary<string, double> getGatherables(){
+			throw new NotImplementedException();
+		}
+        
+		public Dictionary<string, double> getGame()
+        {
+            throw new NotImplementedException();
+        }
 
 		private static string loadDataFileToString(string pathname)
         {
             return MyJsonFileInteractor.loadJsonFileToString(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
         }
-
-		private double[] generateRandomLevels(){
-			double[] array = new double[NUMBER_OF_HABITATS];
-			for (int i = 0; i < NUMBER_OF_HABITATS; i++){
-				array[i] = generateRandomLevel();
-			}
-			return array;
-		}
 
 		private double generateRandomLevel()
 		{

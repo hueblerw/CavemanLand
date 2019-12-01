@@ -68,26 +68,38 @@ namespace CavemanLand.Models
 		private LayerGenerator intLayerGenerator;
 		private Random randy;
 
-        // This constructor is for generating new worlds from scratch
+		// This constructor is for generating new worlds from scratch with a custom name
+        public World(int x, int z, string worldName)
+        {
+            this.worldName = worldName;
+            buildWorld(x, z);
+        }
+
+        // This constructor is for generating new worlds from scratch without a name
         public World(int x, int z)
         {
-			this.x = x;
-			this.z = z;
-			Coordinates.setWorldSize(x, z);
-			currentDate = new WorldDate(1, 1);
-			herds = new List<Herd>();
-			tribes = new List<Tribe>();
-			doubleLayerGenerator = new LayerGenerator(x, z, ROUND_TO);
-			intLayerGenerator = new LayerGenerator(x, z, 0);
-			randy = new Random();
-			maxDiff = 0.0;
-			tileArray = generateTileArray();
-			// Once the basic stats are generated - generate 20 years of weather
-			// This finishes the rivers, and gives the data to generate the habitats.
-			for (int year = 0; year < YEARS_TO_FULL_HABITAT_REGROWTH; year++){
-				generateYearOfWeather(year + 1);
-			}
+            buildWorld(x, z);
         }
+
+		private void buildWorld(int x, int z){
+			this.x = x;
+            this.z = z;
+            Coordinates.setWorldSize(x, z);
+            currentDate = new WorldDate(1, 1);
+            herds = new List<Herd>();
+            tribes = new List<Tribe>();
+            doubleLayerGenerator = new LayerGenerator(x, z, ROUND_TO);
+            intLayerGenerator = new LayerGenerator(x, z, 0);
+            randy = new Random();
+            maxDiff = 0.0;
+            tileArray = generateTileArray();
+            // Once the basic stats are generated - generate 20 years of weather
+            // This finishes the rivers, and gives the data to generate the habitats.
+            for (int year = 0; year < YEARS_TO_FULL_HABITAT_REGROWTH; year++)
+            {
+                generateYearOfWeather(year + 1);
+            }
+		}
 
         // This constructor is intended only for loading extant worlds from File
 		private World(WorldFile worldFile, Tile[,] tileArray, List<Herd> herds, List<Tribe> tribes)

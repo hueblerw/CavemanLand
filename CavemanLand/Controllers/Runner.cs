@@ -5,7 +5,8 @@
 		public static void Main()
 		{
 			WorldController controller = new WorldController();
-			controller.generateWorld();
+			controller.generateWorld(50, 50);
+			controller.saveWorld("Wills World");
 		}
     }
 }

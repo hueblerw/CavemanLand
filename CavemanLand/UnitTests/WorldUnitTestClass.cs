@@ -376,8 +376,7 @@ namespace CavemanLand.UnitTests
 			Console.WriteLine("Surface Water Average for the year");
 			printArray<double>(waterSums);
         }
-
-        // Check that after world generation all habitats are at 100% & ocean percents == ocean habitat percent
+        
 		[Test()]
         public void FullHabitatsTest()
         {
@@ -400,10 +399,10 @@ namespace CavemanLand.UnitTests
             {
                 for (int z = 0; z < WORLDZ; z++)
                 {
+					assertBetween(tileArray[x, z].habitats.currentLevel, 0.0, 10.0);
+                    assertBetween(tileArray[x, z].habitats.gameCurrentLevel, 0.0, 10.0);
 					for (int i = 0; i < tileArray[x, z].habitats.typePercents.Length; i++){
 						assertBetween(tileArray[x, z].habitats.typePercents[i], 0, 100);
-						assertBetween(tileArray[x, z].habitats.currentLevel[i], 0.0, 10.0);
-						assertBetween(tileArray[x, z].habitats.gameCurrentLevel[i], 0.0, 10.0);
 					}
                 }
             }

@@ -40,5 +40,8 @@ Thumbs.db
 # dotCover
 *.dotCover
 
+# Developmental Text Files
+Plan.txt
+
 # World Save Files
 CavemanLand/SaveFiles/*.json

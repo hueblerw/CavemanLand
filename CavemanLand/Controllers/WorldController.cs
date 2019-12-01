@@ -14,11 +14,12 @@ namespace CavemanLand.Controllers
 		public WorldController()
 		{
 		}
-
-        public void generateWorld()
+        
+        public World generateWorld(int x, int z)
 		{
 			loadGeneralFiles();
-			world = new World(50, 50);
+			world = new World(x, z);
+			return world;
 		}
 
         public void loadGeneralFiles()
@@ -28,6 +29,10 @@ namespace CavemanLand.Controllers
 
             json = loadJsonFileToString("Plants.json");
             World.plantSpecies = JsonConvert.DeserializeObject<Plant[]>(json);
+		}
+
+		public void saveWorld(string worldName){
+			world.saveGameFiles(worldName);
 		}
 
 		public World GetWorld()

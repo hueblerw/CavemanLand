@@ -25,9 +25,31 @@ Plan:
 
 
 TODO:
+UI to view JSON files world info
+- zoom levels:
+5x5, 10x10, 15x15, 20x20, 25x25
+- Display:
+habitats
+rivers
+water
+mouseover displays tile info
+images for all tiles
+images for all crops
+images for all animals
+
 Generate Minerals
-Generate many years in a row.
+Add functions to fetch on request:
+- grazing
+- gatherables
+- game (including fish)
+Generate Herds
+Generate Monsters
+Add Herds AI
+
+QUESTIONS:
+Do I want to have a different Quality for each habitat???  If not how to i handle quality changes?  I guess I have it already. + and -.
+
 
 BUGS:
 Why is (0, 0) not producing rain???
-We are at 1:24 to generate a world of 200 x 200.  Can it be improved?
+We are at 1:50+ to generate a world of 200 x 200.  Can it be improved?
