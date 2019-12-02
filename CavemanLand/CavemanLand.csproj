@@ -61,6 +61,7 @@
     <Compile Include="UnitTests\TemperatureEquationTestClass.cs" />
     <Compile Include="UnitTests\DirectionUnitTestClass.cs" />
     <Compile Include="Models\TileSubClasses\Subhabitat.cs" />
+    <Compile Include="UnitTests\HabitatsUnitTestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />

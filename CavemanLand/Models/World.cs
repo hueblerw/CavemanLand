@@ -49,11 +49,11 @@ namespace CavemanLand.Models
 		public const int ROUND_TO = 2;
 		private const double FREEZING_POINT = 32.0;
 		private const string SAVE_FILE_LOCATION = @"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/SaveFiles/";
-
+        
         // Variables
-		public static Animal[] animalSpecies;
-		public static Plant[] plantSpecies;
 		public WorldDate currentDate;
+		public static Dictionary<string, Animal> animalSpecies;
+        public static Dictionary<string, Plant> plantSpecies;
 
 		private string worldName = "WorldA";
 		private WorldFile worldFile;
@@ -67,6 +67,22 @@ namespace CavemanLand.Models
 		private LayerGenerator doubleLayerGenerator;
 		private LayerGenerator intLayerGenerator;
 		private Random randy;
+
+		public static void setAnimalSpecies(Animal[] animals){
+			animalSpecies = new Dictionary<string, Animal>();
+			foreach(Animal animal in animals){
+				animalSpecies.Add(animal.name, animal);
+			}
+		}
+
+		public static void setPlantSpecies(Plant[] plants)
+        {
+			plantSpecies = new Dictionary<string, Plant>();
+			foreach (Plant plant in plants)
+            {
+                plantSpecies.Add(plant.name, plant);
+            }
+        }
 
 		// This constructor is for generating new worlds from scratch with a custom name
         public World(int x, int z, string worldName)
@@ -163,6 +179,29 @@ namespace CavemanLand.Models
 		public Tile[,] getTileArray()
 		{
 			return tileArray;
+		}
+
+        public string getWorldHabitatComposition()
+		{
+			int[] worldPercents = new int[Habitats.NUMBER_OF_HABITATS];
+			for (int x = 0; x < this.x; x++)
+            {
+                for (int z = 0; z < this.z; z++)
+                {
+					int[] percents = tileArray[x, z].habitats.typePercents;
+					for (int h = 0; h < percents.Length; h++)
+					{
+						worldPercents[h] += percents[h];
+					}
+                }
+            }
+
+			string output = "";
+            for (int i = 0; i < worldPercents.Length; i++)
+            {
+				output += Habitats.habitatMapping[i] + ": " + (worldPercents[i] / (100.0 * this.x * this.z)) + " - ";
+            }
+            return output;
 		}
 
 		private static string loadGameFileToString(string pathname)
@@ -607,7 +646,7 @@ namespace CavemanLand.Models
 
 		private bool determineIsIceSheet(double[] snowC){
 			for (int day = 0; day < snowC.Length; day++){
-				if (snowC.Equals(0.0)){
+				if (snowC[day].Equals(0.0)){
 					return false;
 				}
 			}

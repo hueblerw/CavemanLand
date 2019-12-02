@@ -376,37 +376,6 @@ namespace CavemanLand.UnitTests
 			Console.WriteLine("Surface Water Average for the year");
 			printArray<double>(waterSums);
         }
-        
-		[Test()]
-        public void FullHabitatsTest()
-        {
-            Tile[,] tileArray = world.getTileArray();
-            for (int x = 0; x < WORLDX; x++)
-            {
-                for (int z = 0; z < WORLDZ; z++)
-                {
-					Assert.AreEqual(tileArray[x, z].habitats.calculatePercentEmpty(), 0, "tile (" + x + ", " + z + ") is not full.");
-					Assert.AreEqual(tileArray[x, z].habitats.typePercents[13], (int) (tileArray[x, z].terrain.oceanPercent * 100), "tile (" + x + ", " + z + ") oceanPercent and habitat percent that is ocean don't match");
-                }
-            }
-        }
-
-		[Test()]
-        public void HabitatsAreWithinRange()
-        {
-            Tile[,] tileArray = world.getTileArray();
-            for (int x = 0; x < WORLDX; x++)
-            {
-                for (int z = 0; z < WORLDZ; z++)
-                {
-					assertBetween(tileArray[x, z].habitats.currentLevel, 0.0, 10.0);
-                    assertBetween(tileArray[x, z].habitats.gameCurrentLevel, 0.0, 10.0);
-					for (int i = 0; i < tileArray[x, z].habitats.typePercents.Length; i++){
-						assertBetween(tileArray[x, z].habitats.typePercents[i], 0, 100);
-					}
-                }
-            }
-        }
 
 
         // PRIVATE

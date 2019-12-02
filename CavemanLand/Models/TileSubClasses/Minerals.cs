@@ -16,5 +16,11 @@ namespace CavemanLand.Models.TileSubClasses
 			surface.Add("stone", surfaceStone);
 			mineable.Add("stone", mineableStone);
         }
-    }
+
+		public override string ToString()
+		{
+			return base.ToString();
+		}
+
+	}
 }

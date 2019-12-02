@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using CavemanLand.Models;
 using CavemanLand.Models.GenericModels;
 using CavemanLand.Controllers;
@@ -40,8 +41,9 @@ namespace CavemanLand.UnitTests
 
 			WorldController controller = new WorldController();
 			controller.loadGeneralFiles();
-
-			string reConvertedJson = JsonConvert.SerializeObject(World.plantSpecies);
+            
+			Plant[] array = convertPlantHashToArray(World.plantSpecies);
+			string reConvertedJson = JsonConvert.SerializeObject(array);
 			string simplifiedJson = simplifyJson(json);
             Assert.AreEqual(simplifiedJson, reConvertedJson);
 			Console.WriteLine("Correct Plants Json Loaded To Controller!");
@@ -55,7 +57,8 @@ namespace CavemanLand.UnitTests
             WorldController controller = new WorldController();
             controller.loadGeneralFiles();
 
-            string reConvertedJson = JsonConvert.SerializeObject(World.animalSpecies);
+			Animal[] array = convertAnimalHashToArray(World.animalSpecies);
+            string reConvertedJson = JsonConvert.SerializeObject(array);
             string simplifiedJson = simplifyJson(json);
             Assert.AreEqual(simplifiedJson, reConvertedJson);
 			Console.WriteLine("Correct Animal Json Loaded To Controller!");
@@ -64,6 +67,28 @@ namespace CavemanLand.UnitTests
 		private string loadJsonFileToString(string pathname)
         {
 			return MyJsonFileInteractor.loadJsonFileToString(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
+        }
+        
+		private Plant[] convertPlantHashToArray(Dictionary<string, Plant> plantHash){
+			Plant[] array = new Plant[plantHash.Count];
+			int i = 0;
+			foreach(KeyValuePair<string, Plant> pair in plantHash){
+				array[i] = pair.Value;
+				i++;
+			}
+			return array;
+		}
+
+		private Animal[] convertAnimalHashToArray(Dictionary<string, Animal> animalHash)
+        {
+			Animal[] array = new Animal[animalHash.Count];
+            int i = 0;
+			foreach (KeyValuePair<string, Animal> pair in animalHash)
+            {
+                array[i] = pair.Value;
+                i++;
+            }
+            return array;
         }
 
         // removes tabs and line break characters to make comparing jsons accurate.

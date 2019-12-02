@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using CavemanLand.Utility;
+using CavemanLand.Models.GenericModels;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 
 namespace CavemanLand.Models.TileSubClasses
 {
     public class Habitats
     {
 		public const int NUMBER_OF_HABITATS = 14;
+		public const double RIVER_WATERING_MULTIPLIER = 0.1;
 		private const int REGROWTH_MULTIPLIER = 100 / World.YEARS_TO_FULL_HABITAT_REGROWTH;
 		private const int REPLACEMENT_MULTIPLIER = 1;
 		private const int QUALITY_MULTIPLIER = 2;
-		private const double RIVER_WATERING_MULTIPLIER = 0.1;
 		private const double QUALITY_CHANGE_MULTIPLIER = 0.1;
 		private const double QUALITY_MIN = 0.0;
 		private const double QUALITY_MAX = 10.0;
@@ -19,8 +21,9 @@ namespace CavemanLand.Models.TileSubClasses
 		public int[] typePercents;
 		public double currentLevel;
 		public double gameCurrentLevel;
-
-		private static Dictionary<int, string> habitatMapping;
+        
+		public static Dictionary<int, string> habitatMapping;
+		private static Dictionary<string, int> reverseHabitatMapping;
 		private static Dictionary<string, Dictionary<string, double>> ideals;
 		private int percentEmpty;
 		private Random randy;
@@ -121,7 +124,7 @@ namespace CavemanLand.Models.TileSubClasses
 			}
         }
 
-		public double Foilage(int trees, int temp)
+		public double getFoilage(int trees, int temp)
         {
 			double coldPercent = 0.0;
 			double normalPercent = 0.0;
@@ -135,9 +138,20 @@ namespace CavemanLand.Models.TileSubClasses
 
 			return SubHabitat.getFoilage(currentLevel, temp, trees, coldPercent, normalPercent, hotPercent);
         }
+        
+		public Dictionary<string, double[]> getYearOfGatherables(DailyTemps dailyTemps, DailyRain dailyRain, DailyVolume dailyVolume){
+			Dictionary<string, double[]> crops = new Dictionary<string, double[]>();
+			List<string> activeHabitats = getNonZeroHabitats();
+			Dictionary<string, Plant> plantSpecies = World.plantSpecies;
+			foreach(KeyValuePair<string, Plant> pair in plantSpecies){
+				if (pair.Value.habitats.Any(habitat => activeHabitats.Contains(habitat))){
+					double habitatPercentage = typePercents[reverseHabitatMapping[pair.Key]] * .01;
+					double[] cropHistory = pair.Value.getYearOfCrop(habitatPercentage, dailyTemps, dailyRain, dailyVolume);
+					crops.Add(pair.Key, cropHistory);
+				}
+			}
 
-		public Dictionary<string, double> getGatherables(){
-			throw new NotImplementedException();
+			return crops;
 		}
         
 		public Dictionary<string, double> getGame()
@@ -192,6 +206,12 @@ namespace CavemanLand.Models.TileSubClasses
 			mapping.Add(11, "Rainforest");
 			mapping.Add(12, "Ice Sheet");
 			mapping.Add(13, "Ocean");
+
+			reverseHabitatMapping = new Dictionary<string, int>();
+
+			foreach(KeyValuePair<int, string> pair in mapping){
+				reverseHabitatMapping.Add(pair.Value, pair.Key);
+			}
 
 			return mapping;
 		}
@@ -275,5 +295,26 @@ namespace CavemanLand.Models.TileSubClasses
 			return avgRiverLevel * RIVER_WATERING_MULTIPLIER + totalPrecipitation;
 		}
 
-    }
+		private List<string> getNonZeroHabitats()
+		{
+			List<string> habitatNames = new List<string>();
+			for (int i = 0; i < typePercents.Length; i++){
+				if (!typePercents[i].Equals(0.0)){
+					habitatNames.Add(habitatMapping[i]);
+				}
+			}
+			return habitatNames;
+		}
+
+		public override string ToString()
+		{
+			string output = "";
+			for (int i = 0; i < typePercents.Length; i++)
+			{
+				output += habitatMapping[i] + ": " + typePercents[i] + " - ";
+			}
+			return output;
+		}
+
+	}
 }

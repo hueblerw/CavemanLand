@@ -16,5 +16,13 @@
 			this.oceanPercent = oceanPercent;
 			this.hillPercent = hillPercent;
         }
-    }
+
+		public override string ToString()
+		{
+			string output = "Elevation: " + elevation;
+			output += "\tOcean %: " + oceanPercent;
+			output += "\tHill %: " + hillPercent;
+			return output;
+		}
+	}
 }
