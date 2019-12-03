@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using CavemanLand.Models;
 using CavemanLand.Models.GenericModels;
 using CavemanLand.Controllers;
@@ -62,6 +63,21 @@ namespace CavemanLand.UnitTests
             string simplifiedJson = simplifyJson(json);
             Assert.AreEqual(simplifiedJson, reConvertedJson);
 			Console.WriteLine("Correct Animal Json Loaded To Controller!");
+        }
+
+		[Test]
+        public void timePrintOutTileInfo()
+        {
+			WorldController controller = new WorldController();
+            controller.generateWorld(50, 50);
+			Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+			controller.printTileInfo(10, 31);
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+            Console.WriteLine("\n");
+            Console.WriteLine("Print tile info time: " + ts);
+            stopWatch.Reset();
         }
 
 		private string loadJsonFileToString(string pathname)

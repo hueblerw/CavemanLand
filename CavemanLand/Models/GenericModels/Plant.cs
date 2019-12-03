@@ -41,6 +41,7 @@ namespace CavemanLand.Models.GenericModels
 			// If the crop can grow in the region return the crops store the crops returned value in the current crop array for today.
 			int lastInvalidDay = -1;
 			double rainSum = 0.0;
+			bool isSomeCrop = false;
 			for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++)
 			{
 				if (!dayTempAllowCrop(day, dailyTemps.days))
@@ -51,11 +52,20 @@ namespace CavemanLand.Models.GenericModels
 				{
 					double cropMultiplier = (1.0 / ((80 - growthPeriod) * 100.0)) * 400.0 * habitatPercentage;
 					currentCrop[day] = calculateCropQuality(day, rainSum, dailyTemps.days) * cropMultiplier * unitPerHarvest * percentGrowable;
+					if (!isSomeCrop && !currentCrop[day].Equals(0.0)){
+						isSomeCrop = true;
+					}
 				}
                 
 			}
          
-            return currentCrop;
+			if (isSomeCrop)
+			{
+				return currentCrop;
+			} else 
+			{
+				return null;
+			}
         }
 
 

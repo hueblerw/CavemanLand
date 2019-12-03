@@ -21,6 +21,7 @@ namespace CavemanLand.Models.TileSubClasses
 		public int[] typePercents;
 		public double currentLevel;
 		public double gameCurrentLevel;
+		Dictionary<string, double[]> crops = null;
         
 		public static Dictionary<int, string> habitatMapping;
 		private static Dictionary<string, int> reverseHabitatMapping;
@@ -52,6 +53,8 @@ namespace CavemanLand.Models.TileSubClasses
 		}
 
 		public void growHabitats(double avgTemp, double totalPrecipitation, double avgRiverLevel, bool isOcean, bool isIceSheet){
+			// reset the year of crops
+			crops = null;
 			if (!isOcean)
 			{
 				calculatePercentEmpty();
@@ -88,69 +91,116 @@ namespace CavemanLand.Models.TileSubClasses
 		}
 
 		public double getGrazing(double last5Rain, int todaysTemp, out double grass){
-			double plainsPercentage = 0.0;
-			double desertPercentage = 0.0;
-			for (int i = 0; i < 12; i += 4){
-				desertPercentage += typePercents[i] * 0.01;
-				plainsPercentage += typePercents[i + 1] * 0.01;
+			if (typePercents[13] != 100)
+			{
+				double plainsPercentage = 0.0;
+                double desertPercentage = 0.0;
+				for (int i = 0; i < 12; i += 4)
+				{
+					desertPercentage += typePercents[i] * 0.01;
+					plainsPercentage += typePercents[i + 1] * 0.01;
+				}
+                grass = SubHabitat.getGrass(currentLevel, plainsPercentage, desertPercentage, last5Rain, todaysTemp);
+                return SubHabitat.getGrazing(grass);
+			} else 
+			{
+				grass = 0.0;
+				return 0.0;
 			}
 
-			grass = SubHabitat.getGrass(currentLevel, plainsPercentage, desertPercentage, last5Rain, todaysTemp);
-			return SubHabitat.getGrazing(grass);
 		}      
         
 		public int getTrees()
         {
-			double forestPercantage = 0.0;
-            double swampPercentage = 0.0;
-            for (int i = 0; i < 12; i += 4)
-            {
-				forestPercantage += typePercents[i + 2] * 0.01;
-				swampPercentage += typePercents[i + 3] * 0.01;
-            }
+			if (typePercents[13] != 100)
+			{
+				double forestPercantage = 0.0;
+				double swampPercentage = 0.0;
+				for (int i = 0; i < 12; i += 4)
+				{
+					forestPercantage += typePercents[i + 2] * 0.01;
+					swampPercentage += typePercents[i + 3] * 0.01;
+				}
 
-            return SubHabitat.getTreesOnTile(forestPercantage, swampPercentage, currentLevel);
+				return SubHabitat.getTreesOnTile(forestPercantage, swampPercentage, currentLevel);
+			} else
+			{
+				return 0;
+			}
         }
 
 		public double getSeeds(double grass, int trees)
         {
-			if (trees != 0){
-				double coldPercent = .01 * (typePercents[2] + typePercents[3]);
-                double hotPercent = .01 * (typePercents[10] + typePercents[11]);
-                double normalPercent = .01 * (typePercents[6] + typePercents[7]);
-				return SubHabitat.getSeeds(grass, trees, coldPercent, normalPercent, hotPercent);
-			} else {
-				return SubHabitat.getSeeds(grass, trees, 0.0, 0.0, 0.0);
+			if (typePercents[13] != 100)
+			{
+				if (trees != 0)
+				{
+					double coldPercent = .01 * (typePercents[2] + typePercents[3]);
+					double hotPercent = .01 * (typePercents[10] + typePercents[11]);
+					double normalPercent = .01 * (typePercents[6] + typePercents[7]);
+					return SubHabitat.getSeeds(grass, trees, coldPercent, normalPercent, hotPercent);
+				}
+				else
+				{
+					return SubHabitat.getSeeds(grass, trees, 0.0, 0.0, 0.0);
+				}
+			} else 
+			{
+				return 0.0;
 			}
         }
 
 		public double getFoilage(int trees, int temp)
         {
-			double coldPercent = 0.0;
-			double normalPercent = 0.0;
-			double hotPercent = 0.0;
-			for (int i = 0; i < 4; i++)
-            {
-				coldPercent += typePercents[i] * 0.01;
-				normalPercent += typePercents[i + 4] * .01;
-				hotPercent += typePercents[i + 8] * 0.01;
-            }
+			if (typePercents[13] != 100)
+			{
+				double coldPercent = 0.0;
+				double normalPercent = 0.0;
+				double hotPercent = 0.0;
+				for (int i = 0; i < 4; i++)
+				{
+					coldPercent += typePercents[i] * 0.01;
+					normalPercent += typePercents[i + 4] * .01;
+					hotPercent += typePercents[i + 8] * 0.01;
+				}
 
-			return SubHabitat.getFoilage(currentLevel, temp, trees, coldPercent, normalPercent, hotPercent);
+				return SubHabitat.getFoilage(currentLevel, temp, trees, coldPercent, normalPercent, hotPercent);
+			} else 
+			{
+				return 0.0;
+			}
         }
         
 		public Dictionary<string, double[]> getYearOfGatherables(DailyTemps dailyTemps, DailyRain dailyRain, DailyVolume dailyVolume){
-			Dictionary<string, double[]> crops = new Dictionary<string, double[]>();
-			List<string> activeHabitats = getNonZeroHabitats();
-			Dictionary<string, Plant> plantSpecies = World.plantSpecies;
-			foreach(KeyValuePair<string, Plant> pair in plantSpecies){
-				if (pair.Value.habitats.Any(habitat => activeHabitats.Contains(habitat))){
-					double habitatPercentage = typePercents[reverseHabitatMapping[pair.Key]] * .01;
-					double[] cropHistory = pair.Value.getYearOfCrop(habitatPercentage, dailyTemps, dailyRain, dailyVolume);
-					crops.Add(pair.Key, cropHistory);
-				}
+			if (crops == null)
+			{
+				crops = new Dictionary<string, double[]>();
+                List<string> activeHabitats = getNonZeroHabitats();
+                Dictionary<string, Plant> plantSpecies = World.plantSpecies;
+                foreach (KeyValuePair<string, Plant> pair in plantSpecies)
+                {
+					double habitatPercentage = 0.0;
+					if (pair.Value.habitats.Contains("All"))
+					{
+						habitatPercentage = (100 - typePercents[13] - typePercents[12]) * .01;
+					}
+					else if (pair.Value.habitats.Any(habitat => activeHabitats.Contains(habitat)))
+					{
+						foreach (string habitat in pair.Value.habitats)
+						{
+							habitatPercentage += typePercents[reverseHabitatMapping[habitat]] * .01;
+						}
+					}
+					if (!habitatPercentage.Equals(0.0))
+					{
+						double[] cropHistory = pair.Value.getYearOfCrop(habitatPercentage, dailyTemps, dailyRain, dailyVolume);
+						if (cropHistory != null){
+							crops.Add(pair.Key, cropHistory);
+						}	
+					}
+                }
 			}
-
+                     
 			return crops;
 		}
         
@@ -308,7 +358,8 @@ namespace CavemanLand.Models.TileSubClasses
 
 		public override string ToString()
 		{
-			string output = "";
+			string output = "Habitat Quality: " + currentLevel + "\n";
+			output += "Game Quality: " + gameCurrentLevel + "\n";
 			for (int i = 0; i < typePercents.Length; i++)
 			{
 				output += habitatMapping[i] + ": " + typePercents[i] + " - ";

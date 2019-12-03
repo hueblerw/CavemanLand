@@ -39,17 +39,16 @@ images for all animals
 
 Generate Minerals
 Add functions to fetch on request:
-- grazing
-- gatherables
+- grazing - DONE
+- gatherables - Not sure they are right but they look good so far - finish UNIT tests
 - game (including fish)
 Generate Herds
 Generate Monsters
 Add Herds AI
 
-QUESTIONS:
-Do I want to have a different Quality for each habitat???  If not how to i handle quality changes?  I guess I have it already. + and -.
-
 
 BUGS:
 Why is (0, 0) not producing rain???
 We are at 1:50+ to generate a world of 200 x 200.  Can it be improved?
+Quality is always 10.
+
