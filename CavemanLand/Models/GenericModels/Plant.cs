@@ -51,7 +51,7 @@ namespace CavemanLand.Models.GenericModels
 				if (day - lastInvalidDay >= growthPeriod - 1 && dayRainAllowCrop(day, dailyRain.precip, dailyVolume.volume, out rainSum, out percentGrowable))
 				{
 					double cropMultiplier = (1.0 / ((80 - growthPeriod) * 100.0)) * 400.0 * habitatPercentage;
-					currentCrop[day] = calculateCropQuality(day, rainSum, dailyTemps.days) * cropMultiplier * unitPerHarvest * percentGrowable;
+					currentCrop[day] = Math.Round(calculateCropQuality(day, rainSum, dailyTemps.days) * cropMultiplier * unitPerHarvest * percentGrowable, World.ROUND_TO);
 					if (!isSomeCrop && !currentCrop[day].Equals(0.0)){
 						isSomeCrop = true;
 					}
@@ -98,7 +98,7 @@ namespace CavemanLand.Models.GenericModels
             double maxDist = (rainfallRange[1] - rainfallRange[0]) / 2.0;
 			double idealRain = (rainfallRange[1] + rainfallRange[0]) / 2.0;
             double rainMultiplier = 1.25 - ((Math.Abs(rainSum - idealRain) / maxDist) * .75);
-            // return the two modifiers used together.
+			// return the two modifiers used together.
 			return (goodDays / growthPeriod) * rainMultiplier * 100.0;
         }
 

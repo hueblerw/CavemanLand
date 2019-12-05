@@ -40,7 +40,7 @@ images for all animals
 Generate Minerals
 Add functions to fetch on request:
 - grazing - DONE
-- gatherables - Not sure they are right but they look good so far - finish UNIT tests
+- gatherables - DONE
 - game (including fish)
 Generate Herds
 Generate Monsters

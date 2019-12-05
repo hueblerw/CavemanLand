@@ -20,5 +20,15 @@ namespace CavemanLand.Models.TileSubClasses
 			this.upstreamDirections = upstreamDirections;
 			this.flowRate = flowRate;
         }
+
+		public string printUpstreamDirections()
+		{
+			string output = "";
+			foreach(Direction.CardinalDirections dir in upstreamDirections)
+			{
+				output += dir + ", ";
+			}
+			return output;
+		}
     }
 }

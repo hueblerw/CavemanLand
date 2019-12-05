@@ -25,10 +25,14 @@ namespace CavemanLand.Models
 			output += "\n" + terrain;
 			output += "\nTemperature: " + temperatures.dailyTemps.days[day];
 			output += "\nRainfall: " + precipitation.dailyRain.precip[day];
+			output += "\nUpstream: " + rivers.printUpstreamDirections();
+			output += "\nDownstream: " + rivers.flowDirection;
 			output += "\nSurface Water: " + rivers.dailyVolume.volume[day];
 			output += "\n" + habitats;
 			output += "\n" + printDictionary("Vegetation", getVegetation(day));
 			output += "\n" + printDictionary("Gatherables", getTodaysGatherables(day));
+			// temporary!!!
+			output += "\n" + printDictionary("Full Year Of Gatherables", getTotalGatherablesForYear());
 			output += "\n" + minerals;
 			return output;
 		}
@@ -72,6 +76,18 @@ namespace CavemanLand.Models
 			return todaysGatherables;
 		}
 
+        public Dictionary<string, double> getTotalGatherablesForYear()
+		{
+			Dictionary<string, double[]> yearOfGatherables = habitats.getYearOfGatherables(temperatures.dailyTemps, precipitation.dailyRain, rivers.dailyVolume);
+            Dictionary<string, double> gatherableSums = new Dictionary<string, double>();
+            foreach (KeyValuePair<string, double[]> pair in yearOfGatherables)
+            {
+				gatherableSums.Add(pair.Key, sumArray(pair.Value));
+            }
+
+			return gatherableSums;
+		}
+        
         private string printDictionary(string dictionaryName, Dictionary<string, double> dictionary)
 		{
 			string output = dictionaryName + " - \n";
@@ -80,6 +96,16 @@ namespace CavemanLand.Models
 				output += pair.Key + ": " + pair.Value + "\t";
 			}
 			return output;
+		}
+
+        private double sumArray(double[] array)
+		{
+			double sum = 0.0;
+			for (int i = 0; i < array.Length; i++)
+			{
+				sum += array[i];
+			}
+			return sum;
 		}
         
     }

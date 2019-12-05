@@ -4,6 +4,7 @@ using CavemanLand.Models;
 using CavemanLand.Models.TileSubClasses;
 using CavemanLand.Utility;
 using System;
+using System.Collections.Generic;
 
 namespace CavemanLand.UnitTests
 {
@@ -121,8 +122,8 @@ namespace CavemanLand.UnitTests
         public void GetTreesTest()
         {
 			Tile[,] tileArray = world.getTileArray();
-            double[,] trees25 = new double[WORLDX, WORLDZ];
-            double[,] trees50 = new double[WORLDX, WORLDZ];
+            int[,] trees25 = new int[WORLDX, WORLDZ];
+            int[,] trees50 = new int[WORLDX, WORLDZ];
             for (int x = 0; x < WORLDX; x++)
             {
                 for (int z = 0; z < WORLDZ; z++)
@@ -130,7 +131,7 @@ namespace CavemanLand.UnitTests
                     for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++)
                     {
                         // Setup
-                        double todaysTrees = tileArray[x, z].habitats.getTrees();
+                        int todaysTrees = tileArray[x, z].habitats.getTrees();
                         // expect to be greater than or equal to 0.0
 						Assert.GreaterOrEqual(todaysTrees, 0);
                         // expect to be 0.0 when Ocean
@@ -162,39 +163,109 @@ namespace CavemanLand.UnitTests
             }
             // print grazing in world on day 25 and day 75
             Console.WriteLine("\nTrees Day 25: ");
-            printArray<double>(trees25);
+            printArray<int>(trees25);
             Console.WriteLine("Trees Day 50: ");
-            printArray<double>(trees50);
+            printArray<int>(trees50);
         }
          
 		 [Test()]
         public void GetSeedsTest()
         {
 			Tile[,] tileArray = world.getTileArray();
+            double[,] seeds25 = new double[WORLDX, WORLDZ];
+            double[,] seeds50 = new double[WORLDX, WORLDZ];
             for (int x = 0; x < WORLDX; x++)
             {
                 for (int z = 0; z < WORLDZ; z++)
                 {
-					// expect to be greater than or equal to 0.0
-					// expect to be 0.0 when Ocean
-                    // print seeds in world
+                    for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++)
+                    {
+                        // Setup
+						int todaysTemp = tileArray[x, z].temperatures.dailyTemps.days[day];
+                        double grass;
+                        double last5Rain = 0.0;
+                        int firstDay = Math.Max(0, day - 4);
+                        for (int d = firstDay; d <= day; d++)
+                        {
+                            last5Rain += tileArray[x, z].precipitation.dailyRain.precip[d] + tileArray[x, z].rivers.dailyVolume.volume[d] * Habitats.RIVER_WATERING_MULTIPLIER;
+                        }
+                        double todaysGrazing = tileArray[x, z].habitats.getGrazing(last5Rain, todaysTemp, out grass);
+						int todaysTrees = tileArray[x, z].habitats.getTrees();
+						double todaysSeeds = tileArray[x, z].habitats.getSeeds(grass, todaysTrees);
+                        // expect to be greater than or equal to 0.0
+						Assert.GreaterOrEqual(todaysSeeds, 0);
+                        // expect to be 0.0 when Ocean
+                        if (tileArray[x, z].terrain.oceanPercent.Equals(1.0))
+                        {
+							Assert.AreEqual(todaysSeeds, 0);
+                        }
+                        // Expect there to be some seeds if not ice or ocean
+						if (tileArray[x, z].habitats.typePercents[12] + tileArray[x, z].habitats.typePercents[13] < 95)
+                        {
+							Assert.Greater(todaysSeeds, 0.0, "Day " + day + " at (" + x + ", " + z + ") seeds value is not greater than 0.0, [" + (tileArray[x, z].habitats.typePercents[12] + tileArray[x, z].habitats.typePercents[13]) + "]");
+                        }
+                        if (day == 24)
+                        {
+							seeds25[x, z] = todaysSeeds;
+                        }
+                        if (day == 49)
+                        {
+							seeds50[x, z] = todaysSeeds;
+                        }
+                    }
                 }
             }
+            // print grazing in world on day 25 and day 75
+            Console.WriteLine("\nSeeds Day 25: ");
+            printArray<double>(seeds25);
+            Console.WriteLine("Seeds Day 50: ");
+            printArray<double>(seeds50);
         }
 
         [Test()]
         public void GetFoilageTest()
         {
 			Tile[,] tileArray = world.getTileArray();
+            double[,] leaves25 = new double[WORLDX, WORLDZ];
+            double[,] leaves50 = new double[WORLDX, WORLDZ];
             for (int x = 0; x < WORLDX; x++)
             {
                 for (int z = 0; z < WORLDZ; z++)
                 {
-					// expect to be greater than or equal to 0.0
-					// expect to be 0.0 when Ocean
-                    // print foilage in world
+                    for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++)
+                    {
+                        // Setup
+						int todaysTemp = tileArray[x, z].temperatures.dailyTemps.days[day];
+						int todaysTrees = tileArray[x, z].habitats.getTrees();
+						double todaysLeaves = tileArray[x, z].habitats.getFoilage(todaysTrees, todaysTemp);
+                        // expect to be greater than or equal to 0.0
+						Assert.GreaterOrEqual(todaysLeaves, 0);
+                        // expect to be 0.0 when Ocean
+                        if (tileArray[x, z].terrain.oceanPercent.Equals(1.0))
+                        {
+							Assert.AreEqual(todaysLeaves, 0);
+                        }
+                        // Expect there to be some foilage if not ice or ocean
+                        if (tileArray[x, z].habitats.typePercents[12] + tileArray[x, z].habitats.typePercents[13] < 95)
+                        {
+							Assert.Greater(todaysLeaves, 0.0, "Day " + day + " at (" + x + ", " + z + ") seeds value is not greater than 0.0, [" + (tileArray[x, z].habitats.typePercents[12] + tileArray[x, z].habitats.typePercents[13]) + "]");
+                        }
+                        if (day == 24)
+                        {
+							leaves25[x, z] = todaysLeaves;
+                        }
+                        if (day == 49)
+                        {
+							leaves50[x, z] = todaysLeaves;
+                        }
+                    }
                 }
             }
+            // print grazing in world on day 25 and day 75
+            Console.WriteLine("\nSeeds Day 25: ");
+            printArray<double>(leaves25);
+            Console.WriteLine("Seeds Day 50: ");
+            printArray<double>(leaves50);
         }
 
         [Test()]
@@ -205,9 +276,14 @@ namespace CavemanLand.UnitTests
             {
                 for (int z = 0; z < WORLDZ; z++)
                 {
-					// expect to be greater than or equal to 0.0
-					// expect to be 0.0 when Ocean
-                    // print gatherables in world
+                    // Setup
+					Dictionary<string, double[]> yearOfGatherables = tileArray[x, z].habitats.getYearOfGatherables(tileArray[x, z].temperatures.dailyTemps, tileArray[x, z].precipitation.dailyRain, tileArray[x, z].rivers.dailyVolume);
+                    // expect to be greater than or equal to 0.0 sum of the year for each returned crop to be > 0
+                    foreach(KeyValuePair<string, double[]> pair in yearOfGatherables)
+					{
+						double sum = sumArray(pair.Value);
+						Assert.Greater(sum, 0.0);
+					}
                 }
             }
         }
@@ -280,6 +356,16 @@ namespace CavemanLand.UnitTests
             }
             return sum;
         }
+
+        private double sumArray(double[] array)
+		{
+			double sum = 0.0;
+			for (int i = 0; i < array.Length; i++)
+			{
+				sum += array[i];
+			}
+			return sum;
+		}
         
     }
 }

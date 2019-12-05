@@ -76,7 +76,7 @@ namespace CavemanLand.Models.TileSubClasses
                 }
 			}
 
-			return foilage;
+			return Math.Round(foilage, World.ROUND_TO);
         }
     }
 }
