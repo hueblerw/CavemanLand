@@ -38,12 +38,15 @@ images for all tiles
 images for all crops
 images for all animals
 
-Generate Minerals
 Add functions to fetch on request:
 - grazing - DONE
 - gatherables - DONE
-- game - DONE, but fish r not correctly balanced, need unit tests
+- game - DONE, but fish r not correctly balanced, need unit tests for game, for the new river function
+Create a function to return a dictionary of tile info for the UI.
+Make the print function print ITS contents
 Correctly implement temperature - https://github.com/hueblerw/CavemanWorld/blob/master/DynamicCavemanWorld/Assets/Classes/Habitat.cs#L171-L189
+
+Generate Minerals
 Generate Herds
 Generate Monsters
 Add Herds AI
