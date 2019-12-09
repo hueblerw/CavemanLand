@@ -204,15 +204,110 @@ namespace CavemanLand.Models.TileSubClasses
 			return crops;
 		}
         
-		public Dictionary<string, double> getGame()
+		public Dictionary<string, int> getGame(Dictionary<string, double> vegetation, double elevation, double surfaceWater)
         {
-            throw new NotImplementedException();
+			double depth = 4.0 * Math.Max(-elevation + 1.5, 0.0);
+			vegetation.Add("water", typePercents[reverseHabitatMapping["Ocean"]] * depth + surfaceWater);
+			Dictionary<string, int> gamePresent = new Dictionary<string, int>();
+			// vegetarians
+			double availableGameMeat = 0.0;
+			foreach (KeyValuePair<string, double> foodPair in vegetation)
+			{
+				string foodType = foodPair.Key;
+				double amount = foodPair.Value;
+				gamePresent = calculateAnimalNumbers(foodType, amount, gamePresent, availableGameMeat, out availableGameMeat);
+			}
+            
+			double carnivoreMeat = 0.0;
+			double fishMeat = 0.0;
+			// fish eaters
+			if (gamePresent.ContainsKey("fish"))
+			{
+				fishMeat = gamePresent["fish"] * World.animalSpecies["fish"].foodPerAnimal;
+			}
+			gamePresent = calculateAnimalNumbers("fish", fishMeat, gamePresent, carnivoreMeat, out carnivoreMeat);
+			// meat eaters
+			gamePresent = calculateAnimalNumbers("meat", (1.0 + gameCurrentLevel / QUALITY_MAX) * (availableGameMeat / WorldDate.DAYS_PER_YEAR), gamePresent, carnivoreMeat, out carnivoreMeat);
+			return gamePresent;
         }
 
 		private static string loadDataFileToString(string pathname)
         {
             return MyJsonFileInteractor.loadJsonFileToString(@"/Users/williamhuebler/GameFiles/CavemanLand/CavemanLand/DataFiles/" + pathname);
         }
+
+		private Dictionary<string, int> calculateAnimalNumbers(string foodType, double foodAmount, Dictionary<string, int> gamePresent, double incomingMeat, out double gameMeat)
+		{
+			Dictionary<string, double> possibleAnimals = getPossibleAnimals(foodType);
+            // sum all animals abundance
+            double abundanceSum = 0.0;
+			gameMeat = incomingMeat;
+            foreach (KeyValuePair<string, double> pair in possibleAnimals)
+            {
+                abundanceSum += pair.Value;
+            }
+            // use 0-25% of the available food to populate animals proportionately based on abundance
+            foreach (KeyValuePair<string, double> pair in possibleAnimals)
+            {
+                Animal currentAnimal = World.animalSpecies[pair.Key];
+				double foodAvailable = (pair.Value / abundanceSum) * .25 * (gameCurrentLevel / QUALITY_MAX) * foodAmount;
+                // truncate don't round
+				int newAnimals = (int)(foodAvailable / currentAnimal.foodEaten);
+				if (gamePresent.ContainsKey(pair.Key))
+				{
+					gamePresent[pair.Key] += newAnimals;
+				} else 
+				{
+					gamePresent[pair.Key] = newAnimals;
+				}
+                if (currentAnimal.name != "fish")
+				{
+					gameMeat += newAnimals * currentAnimal.foodPerAnimal;
+				}
+            }
+
+			return gamePresent;
+		}
+
+        private Dictionary<string, double> getPossibleAnimals(string foodType)
+		{
+			Dictionary<string, double> possibleAnimals = new Dictionary<string, double>();
+			double abundance;
+			foreach (KeyValuePair<string, Animal> pair in World.animalSpecies)
+			{
+				if (pair.Value.formsHerds == null && pair.Value.foodType.Contains(foodType))
+				{
+					abundance = 0.0;
+					for (int index = 0; index < typePercents.Length; index++)
+                    {
+                        if (typePercents[index] > 0)
+                        {
+							int abundanceIndex = -1;
+                            // Set abundance index to 0 if you are in all habitats UNLESS this is ocean
+							if (pair.Value.habitats.Contains("All") && index != reverseHabitatMapping["Ocean"])
+							{
+								abundanceIndex = 0;
+							}
+							else
+							{
+								abundanceIndex = pair.Value.habitats.IndexOf(habitatMapping[index]);
+							}
+                            if (abundanceIndex != -1)
+							{
+								// for your habitats average the abundances for all possible animals
+								abundance += typePercents[index] * .01 * pair.Value.abundance[abundanceIndex];
+							}                     
+                        }
+                    }
+                    if (abundance > 0.0)
+					{
+						possibleAnimals.Add(pair.Value.name, abundance);
+					}
+				}
+			}
+
+			return possibleAnimals;
+		}
 
 		private double generateRandomLevel()
 		{
@@ -306,7 +401,7 @@ namespace CavemanLand.Models.TileSubClasses
 			int multiplier = 0;
 			switch (avgTemp)
             {
-				case double temp when (temp > 45.0 && temp < 70):
+				case double temp when (temp > 40.0 && temp < 70):
                     // Temperate
                     multiplier = 1;
                     break;

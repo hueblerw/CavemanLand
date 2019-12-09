@@ -2,10 +2,10 @@
 	{
 		"name": "fish",
 		"formsHerds": null,
-		"habitats": ["ocean", "river", "lake"],
-		"abundance": [80, 70, 70],
+		"habitats": ["Ocean", "Surface Water"],
+		"abundance": [100, 100],
 		"foodType": ["water"],
-		"foodEaten": 1.0,
+		"foodEaten": 0.02,
 		"defense": 1,
 		"attack": 0,
 		"temperatureTolerance": [-10, 100],
@@ -19,7 +19,7 @@
 	{
 		"name": "shark",
 		"formsHerds": null,
-		"habitats": ["ocean"],
+		"habitats": ["Ocean"],
 		"abundance": [50],
 		"foodType": ["fish"],
 		"foodEaten": 1580.37,
@@ -36,10 +36,10 @@
 	{
 		"name": "whale",
 		"formsHerds": null,
-		"habitats": ["ocean"],
+		"habitats": ["Ocean"],
 		"abundance": [25],
 		"foodType": ["water"],
-		"foodEaten": 1.0,
+		"foodEaten": 120,
 		"defense": 100,
 		"attack": 10,
 		"temperatureTolerance": [0, 80],
@@ -53,8 +53,8 @@
 	{
 		"name": "crocodile",
 		"formsHerds": null,
-		"habitats": ["river", "lake", "swamp"],
-		"abundance": [25],
+		"habitats": ["Surface Water", "Swamp"],
+		"abundance": [25, 50],
 		"foodType": ["fish", "meat"],
 		"foodEaten": 1.0,
 		"defense": 100,
@@ -70,7 +70,7 @@
 	{
 		"name": "squirrel",
 		"formsHerds": null,
-		"habitats": ["forest", "monsoon forest", "swamp", "rainforest", "boreal", "artic marsh"],
+		"habitats": ["Forest", "Monsoon Forest", "Swamp", "Rainforest", "Boreal", "Artic Marsh"],
 		"abundance": [70, 50, 60, 40, 60, 50],
 		"foodType": ["seed", "nuts"],
 		"foodEaten": 0.0041167,
@@ -87,7 +87,7 @@
 	{
 		"name": "rabbit",
 		"formsHerds": null,
-		"habitats": ["hot desert", "desert", "dry tundra", "savannah", "plains", "tundra"],
+		"habitats": ["Hot Desert", "Desert", "Artic Desert", "Savannah", "Plains", "Tundra"],
 		"abundance": [50, 60, 50, 60, 60, 50],
 		"foodType": ["grazing", "foilage"],
 		"foodEaten": 0.0090567,
@@ -104,7 +104,7 @@
 	{
 		"name": "lizard",
 		"formsHerds": null,
-		"habitats": ["hot desert", "desert", "savannah", "rainforest"],
+		"habitats": ["Hot Desert", "Desert", "Savannah", "Rainforest"],
 		"abundance": [40, 40, 30, 40],
 		"foodType": ["seeds"],
 		"foodEaten": 0.0009333,
@@ -121,7 +121,7 @@
 	{
 		"name": "chicken",
 		"formsHerds": null,
-		"habitats": ["plains", "forest"],
+		"habitats": ["Plains", "Forest"],
 		"abundance": [30, 40],
 		"foodType": ["seeds"],
 		"foodEaten": 0.0131,
@@ -138,7 +138,7 @@
 	{
 		"name": "songbird",
 		"formsHerds": null,
-		"habitats": ["all"],
+		"habitats": ["All"],
 		"abundance": [50],
 		"foodType": ["seeds"],
 		"foodEaten": 0.0006367,
@@ -155,7 +155,7 @@
 	{
 		"name": "rat",
 		"formsHerds": null,
-		"habitats": ["all"],
+		"habitats": ["All"],
 		"abundance": [50],
 		"foodType": ["seeds", "foilage"],
 		"foodEaten": 0.0020583,
@@ -172,7 +172,7 @@
 	{
 		"name": "frog",
 		"formsHerds": null,
-		"habitats": ["forest", "monsoon forest", "swamp", "rainforest"],
+		"habitats": ["Forest", "Monsoon Forest", "Swamp", "Rainforest"],
 		"abundance": [30, 40, 60, 60],
 		"foodType": ["foilage"],
 		"foodEaten": 4.667E-05,
@@ -189,7 +189,7 @@
 	{
 		"name": "fox",
 		"formsHerds": null,
-		"habitats": ["forest", "boreal", "plains", "tundra"],
+		"habitats": ["Forest", "Boreal", "Plains", "Tundra"],
 		"abundance": [30, 40, 60, 60],
 		"foodType": ["meat"],
 		"foodEaten": 0.1235,
@@ -206,7 +206,7 @@
 	{
 		"name": "cat",
 		"formsHerds": null,
-		"habitats": ["forest", "monsoon forest", "plains", "savannah", "swamp", "rainforest"],
+		"habitats": ["Forest", "Monsoon Forest", "Plains", "Savannah", "Swamp", "Rainforest"],
 		"abundance": [30, 30, 35, 40, 25, 40],
 		"foodType": ["meat"],
 		"foodEaten": 0.1235,
@@ -223,7 +223,7 @@
 	{
 		"name": "falcon",
 		"formsHerds": null,
-		"habitats": ["all"],
+		"habitats": ["All"],
 		"abundance": [40],
 		"foodType": ["meat"],
 		"foodEaten": 0.023875,
@@ -240,7 +240,7 @@
 	{
 		"name": "cow",
 		"formsHerds": [6, 30],
-		"habitats": ["plains", "savannah"],
+		"habitats": ["Plains", "Savannah"],
 		"abundance": [60, 60],
 		"foodType": ["grazing"],
 		"foodEaten": 4.94,
@@ -257,7 +257,7 @@
 	{
 		"name": "sheep",
 		"formsHerds": [6, 40],
-		"habitats": ["plains", "savannah", "tundra"],
+		"habitats": ["Plains", "Savannah", "Tundra"],
 		"abundance": [60, 40, 50],
 		"foodType": ["grazing", "scrub"],
 		"foodEaten": 0.6586667,
@@ -274,7 +274,7 @@
 	{
 		"name": "camel",
 		"formsHerds": [4, 16],
-		"habitats": ["desert", "hot desert"],
+		"habitats": ["Desert", "Hot Desert"],
 		"abundance": [50, 55],
 		"foodType": ["grazing", "foilage", "scrub"],
 		"foodEaten": 3.4991667,
@@ -291,7 +291,7 @@
 	{
 		"name": "horse",
 		"formsHerds": [5, 30],
-		"habitats": ["plains", "savannah"],
+		"habitats": ["Plains", "Savannah"],
 		"abundance": [45, 40],
 		"foodType": ["grazing"],
 		"foodEaten": 3.2933333,
@@ -308,7 +308,7 @@
 	{
 		"name": "pig",
 		"formsHerds": [6, 25],
-		"habitats": ["forest", "forest monsoon", "swamp", "rainforest"],
+		"habitats": ["Forest", "Forest Monsoon", "Swamp", "Rainforest"],
 		"abundance": [60, 60, 50, 65],
 		"foodType": ["foilage", "scrub", "seeds", "nuts", "fruit"],
 		"foodEaten": 0.5763333,
@@ -325,7 +325,7 @@
 	{
 		"name": "deer",
 		"formsHerds": [6, 40],
-		"habitats": ["forest", "forest monsoon", "boreal", "swamp", "rainforest", "artic marsh", "plains", "tundra"],
+		"habitats": ["Forest", "Forest Monsoon", "Boreal", "Swamp", "Rainforest", "Artic Marsh", "Plains", "Tundra"],
 		"abundance": [70, 60, 50, 50, 40, 30, 30],
 		"foodType": ["grazing", "foilage", "scrub"],
 		"foodEaten": 0.5763333,
@@ -342,7 +342,7 @@
 	{
 		"name": "antelope",
 		"formsHerds": [5, 25],
-		"habitats": ["savannah"],
+		"habitats": ["Savannah"],
 		"abundance": [65],
 		"foodType": ["grazing"],
 		"foodEaten": 0.4528333,
@@ -359,7 +359,7 @@
 	{
 		"name": "bison",
 		"formsHerds": [6, 40],
-		"habitats": ["plains", "savannah", "tundra"],
+		"habitats": ["Plains", "Savannah", "Tundra"],
 		"abundance": [40, 45, 25],
 		"foodType": ["grazing"],
 		"foodEaten": 5.7633333,
@@ -376,7 +376,7 @@
 	{
 		"name": "elephant",
 		"formsHerds": [4, 15],
-		"habitats": ["monsoon forest", "rainforest"],
+		"habitats": ["Monsoon Forest", "Rainforest"],
 		"abundance": [40, 40],
 		"foodType": ["grazing", "foilage", "scrub"],
 		"foodEaten": 32.933333,
@@ -393,7 +393,7 @@
 	{
 		"name": "mammoth",
 		"formsHerds": [4, 15],
-		"habitats": ["tundra", "plains"],
+		"habitats": ["Tundra", "Plains"],
 		"abundance": [60, 40],
 		"foodType": ["grazing", "foilage", "scrub"],
 		"foodEaten": 54.34,
@@ -410,7 +410,7 @@
 	{
 		"name": "wolf",
 		"formsHerds": [4, 20],
-		"habitats": ["forest", "forest monsoon", "boreal", "plains", "tundra"],
+		"habitats": ["Forest", "Forest Monsoon", "Boreal", "Plains", "Tundra"],
 		"abundance": [50, 40, 50, 30, 40],
 		"foodType": ["meat"],
 		"foodEaten": 0.494,
@@ -427,7 +427,7 @@
 	{
 		"name": "dog",
 		"formsHerds": [4, 20],
-		"habitats": ["forest", "boreal", "plains", "tundra"],
+		"habitats": ["Forest", "Boreal", "Plains", "Tundra"],
 		"abundance": [40, 30, 30, 20],
 		"foodType": ["meat"],
 		"foodEaten": 0.2058333,
@@ -444,7 +444,7 @@
 	{
 		"name": "lion",
 		"formsHerds": [4, 20],
-		"habitats": ["savannah", "monsoon forest"],
+		"habitats": ["Savannah", "Monsoon Forest"],
 		"abundance": [60, 40],
 		"foodType": ["meat"],
 		"foodEaten": 2.0995,
@@ -461,7 +461,7 @@
 	{
 		"name": "human",
 		"formsHerds": [0, 0],
-		"habitats": ["all"],
+		"habitats": ["All"],
 		"abundance": [50],
 		"foodType": ["meat", "gather"],
 		"foodEaten": 1.0,

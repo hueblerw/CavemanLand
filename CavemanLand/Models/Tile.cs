@@ -29,10 +29,17 @@ namespace CavemanLand.Models
 			output += "\nDownstream: " + rivers.flowDirection;
 			output += "\nSurface Water: " + rivers.dailyVolume.volume[day];
 			output += "\n" + habitats;
-			output += "\n" + printDictionary("Vegetation", getVegetation(day));
+			Dictionary<string, double> vegetation = getVegetation(day);
+			output += "\n" + printDictionary("Vegetation", vegetation);
 			output += "\n" + printDictionary("Gatherables", getTodaysGatherables(day));
 			// temporary!!!
 			output += "\n" + printDictionary("Full Year Of Gatherables", getTotalGatherablesForYear());
+			double riverLevel = 0.0;
+            if (!rivers.dailyVolume.doesItDryOut())
+			{
+				riverLevel = rivers.dailyVolume.getAverageWaterLevel();
+			}
+			output += "\n" + printDictionary("Game", habitats.getGame(vegetation, terrain.elevation, riverLevel));
 			output += "\n" + minerals;
 			return output;
 		}
@@ -97,6 +104,16 @@ namespace CavemanLand.Models
 			}
 			return output;
 		}
+
+		private string printDictionary(string dictionaryName, Dictionary<string, int> dictionary)
+        {
+            string output = dictionaryName + " - \n";
+            foreach (KeyValuePair<string, int> pair in dictionary)
+            {
+                output += pair.Key + ": " + pair.Value + "\t";
+            }
+            return output;
+        }
 
         private double sumArray(double[] array)
 		{

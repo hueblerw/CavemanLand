@@ -26,5 +26,12 @@ namespace CavemanLand.Models.TileSubClasses
 			}
 			return Math.Round(sum / WorldDate.DAYS_PER_YEAR, 2);
 		}
+
+        public bool doesItDryOut()
+		{
+			// return true if volume is ever 0
+			return -1 != Array.IndexOf(volume, 0.0);
+		}
+        
     }
 }

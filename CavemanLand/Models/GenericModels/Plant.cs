@@ -55,8 +55,7 @@ namespace CavemanLand.Models.GenericModels
 					if (!isSomeCrop && !currentCrop[day].Equals(0.0)){
 						isSomeCrop = true;
 					}
-				}
-                
+				} 
 			}
          
 			if (isSomeCrop)
