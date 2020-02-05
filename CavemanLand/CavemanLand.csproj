@@ -62,6 +62,7 @@
     <Compile Include="UnitTests\DirectionUnitTestClass.cs" />
     <Compile Include="Models\TileSubClasses\Subhabitat.cs" />
     <Compile Include="UnitTests\HabitatsUnitTestClass.cs" />
+    <Compile Include="UnitTests\DailyVolumeUnitTestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />

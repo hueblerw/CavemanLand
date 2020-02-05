@@ -17,6 +17,7 @@ namespace CavemanLand.Models.TileSubClasses
 		private const double QUALITY_CHANGE_MULTIPLIER = 0.1;
 		private const double QUALITY_MIN = 0.0;
 		private const double QUALITY_MAX = 10.0;
+		private const double MAX_ELE_WITH_COAST_FISH = 2.5;
         
 		public int[] typePercents;
 		public double currentLevel;
@@ -52,14 +53,16 @@ namespace CavemanLand.Models.TileSubClasses
 			return percentEmpty;
 		}
 
-		public void growHabitats(double avgTemp, double totalPrecipitation, double avgRiverLevel, bool isOcean, bool isIceSheet){
+		public void growHabitats(int[] temps, double totalPrecipitation, double avgRiverLevel, bool isOcean, bool isIceSheet){
 			// reset the year of crops
 			crops = null;
 			if (!isOcean)
 			{
 				calculatePercentEmpty();
 				int growthAmount = Math.Max(Math.Min(percentEmpty, REGROWTH_MULTIPLIER), REPLACEMENT_MULTIPLIER);
-				int favoredHabitatIndex = determineFavoredHabitat(avgTemp, totalPrecipitation, avgRiverLevel, isIceSheet);
+				int hotDays = 0;
+				int coldDays = getTempExtremes(temps, out hotDays);
+				int favoredHabitatIndex = determineFavoredHabitat(coldDays, hotDays, totalPrecipitation, avgRiverLevel, isIceSheet);
 				if (percentEmpty > 0)
 				{
 					growthAmount = Math.Min(growthAmount, percentEmpty);
@@ -82,7 +85,7 @@ namespace CavemanLand.Models.TileSubClasses
 					}
 				}
 				// quality increased
-                double change = getQualityChange(favoredHabitatIndex, avgTemp, totalPrecipitation, avgRiverLevel, isIceSheet);
+                double change = getQualityChange(favoredHabitatIndex, coldDays, hotDays, totalPrecipitation, avgRiverLevel, isIceSheet);
                 double newLevel = Math.Round(currentLevel + change, World.ROUND_TO);
                 double newGameLevel = Math.Round(gameCurrentLevel + change, World.ROUND_TO);
                 currentLevel = Math.Min(Math.Max(QUALITY_MIN, newLevel), QUALITY_MAX);
@@ -206,7 +209,7 @@ namespace CavemanLand.Models.TileSubClasses
         
 		public Dictionary<string, int> getGame(Dictionary<string, double> vegetation, double elevation, double surfaceWater)
         {
-			double depth = 4.0 * Math.Max(-elevation + 1.5, 0.0);
+			double depth = 4.0 * Math.Max(-elevation + MAX_ELE_WITH_COAST_FISH, 0.0);
 			vegetation.Add("water", typePercents[reverseHabitatMapping["Ocean"]] * depth + surfaceWater);
 			Dictionary<string, int> gamePresent = new Dictionary<string, int>();
 			// vegetarians
@@ -361,19 +364,19 @@ namespace CavemanLand.Models.TileSubClasses
 			return mapping;
 		}
         
-		private int determineFavoredHabitat(double avgTemp, double totalPrecipitation, double avgRiverLevel, bool isIceSheeet){
+		private int determineFavoredHabitat(int coldDays, int hotDays, double totalPrecipitation, double avgRiverLevel, bool isIceSheeet){
             if(isIceSheeet){
 				// Ice Sheet Index
 				return 12;
 			} else {
 				double functionalPrecipitation = getFunctionalPrecip(avgRiverLevel, totalPrecipitation);
-				int multiplier = getFavoredTempRegion(avgTemp);
+				int multiplier = getFavoredTempRegion(coldDays, hotDays);
 				int addifier = getFavoredPrecipLevel(functionalPrecipitation);
 				return 4 * multiplier + addifier;
 			}
 		}
 
-		private double getQualityChange(int habitatIndex, double avgTemp, double totalPrecipitation, double avgRiverLevel, bool isIceSheet)
+		private double getQualityChange(int habitatIndex, int coldDays, int hotDays, double totalPrecipitation, double avgRiverLevel, bool isIceSheet)
         {
             if (isIceSheet)
             {
@@ -385,31 +388,44 @@ namespace CavemanLand.Models.TileSubClasses
 				// Get data
 				string habitatName = habitatMapping[habitatIndex];
 				double functionalPrecip = getFunctionalPrecip(avgRiverLevel, totalPrecipitation);
-				double idealTemp = ideals[habitatName]["avgTemp"];
-				double tempPlusMinus = ideals[habitatName]["tempPlusMinus"];
 				double idealRain = ideals[habitatName]["rain"];
 				double rainPlusMinus = ideals[habitatName]["tempPlusMinus"];
-                // calculate the change in quality.
-				double tempChange = 1.5 * QUALITY_MULTIPLIER * Math.Abs(avgTemp - idealTemp) / tempPlusMinus;
+				int habitatZone = (int)(habitatIndex / 12);
+				// calculate the change in quality.
+				double tempChange = 1.5 * QUALITY_MULTIPLIER * calculateQualityDayBonus(habitatZone, coldDays, hotDays);
 				double rainChange = 1.5 * QUALITY_MULTIPLIER * Math.Abs(functionalPrecip - idealRain) / rainPlusMinus;
 				return Math.Max(0.0, (tempChange + rainChange) / 2.0);
             }
         }
 
-		private int getFavoredTempRegion(double avgTemp){
-			// Artic
-			int multiplier = 0;
-			switch (avgTemp)
-            {
-				case double temp when (temp > 40.0 && temp < 70):
-                    // Temperate
-                    multiplier = 1;
-                    break;
-                case double temp when (temp >= 70.0):
-					// Tropical
-                    multiplier = 2;
-                    break;
-            }
+		private double calculateQualityDayBonus(int habitatZone, int coldDays, int hotDays)
+		{
+			switch(habitatZone){
+				// cold
+				case 0:
+					return ((coldDays - 40) - (hotDays + 10)) / 20.0;
+                // temperate
+				case 1:
+					return ((15 - (25 - hotDays)) + (15 - (25 - coldDays))) / 15.0;
+                // hot
+				case 2:
+					return ((hotDays - 40) - (coldDays + 10)) / 20.0;
+				default:
+					return 0.0;
+			}
+		}
+
+		private int getFavoredTempRegion(int coldDays, int hotDays){
+			// Temperate
+			int multiplier = 1;
+            // tropical & artic
+            if (coldDays >= 40 && hotDays <= 10)
+			{
+				multiplier = 0;
+			} else if (hotDays >= 40 && coldDays <= 10)
+			{
+				multiplier = 2;
+			}
 
 			return multiplier;
 		}
@@ -434,6 +450,23 @@ namespace CavemanLand.Models.TileSubClasses
             }
 
 			return addifier;
+		}
+
+        private int getTempExtremes(int[] temps, out int hotDays)
+		{
+			int coldDays = 0;
+			hotDays = 0;
+			for (int i = 0; i < temps.Length; i++)
+			{
+				if(temps[i] >= 70)
+				{
+					hotDays++;
+				} else if(temps[i] <= 32)
+				{
+					coldDays++;
+				}
+			}
+			return coldDays;
 		}
 
 		private double getFunctionalPrecip(double avgRiverLevel, double totalPrecipitation){

@@ -41,10 +41,10 @@ images for all animals
 Add functions to fetch on request:
 - grazing - DONE
 - gatherables - DONE
-- game - DONE, but fish r not correctly balanced, need unit tests for game, for the new river function
+- game - DONE
 Create a function to return a dictionary of tile info for the UI.
 Make the print function print ITS contents
-Correctly implement temperature - https://github.com/hueblerw/CavemanWorld/blob/master/DynamicCavemanWorld/Assets/Classes/Habitat.cs#L171-L189
+Correctly implement temperature in habitats - https://github.com/hueblerw/CavemanWorld/blob/master/DynamicCavemanWorld/Assets/Classes/Habitat.cs#L171-L189 - DONE!
 
 Generate Minerals
 Generate Herds
@@ -57,6 +57,9 @@ Natural Shleters
 BUGS:
 Why is (0, 0) not producing rain???
 We are at 1:50+ to generate a world of 200 x 200.  Can it be improved?
-Quality is always 10.
-World is too dry
+Quality is almost always 10.
+World is a bit too dry
+Game is dependent on daily vegetation - leave it for now.
+Grass I think is too high.  The world has way too many game animals.
+
 

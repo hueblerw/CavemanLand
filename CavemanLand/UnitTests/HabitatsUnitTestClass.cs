@@ -3,6 +3,7 @@ using CavemanLand.Controllers;
 using CavemanLand.Models;
 using CavemanLand.Models.TileSubClasses;
 using CavemanLand.Utility;
+using CavemanLand.Models.GenericModels;
 using System;
 using System.Collections.Generic;
 
@@ -296,7 +297,42 @@ namespace CavemanLand.UnitTests
             {
                 for (int z = 0; z < WORLDZ; z++)
                 {
-					// ???
+					double riverLevel = 0.0;
+                    if (!tileArray[x, z].rivers.dailyVolume.doesItDryOut())
+                    {
+                        riverLevel = tileArray[x, z].rivers.dailyVolume.getAverageWaterLevel();
+                    }
+					for (int day = 0; day < WorldDate.DAYS_PER_YEAR; day++)
+					{
+						Dictionary<string, double> vegetation = tileArray[x, z].getVegetation(day);
+						Dictionary<string, int> game = tileArray[x, z].habitats.getGame(vegetation, tileArray[x, z].terrain.elevation, riverLevel);
+                        // if ocean > 0 expect fish
+                        if(tileArray[x, z].habitats.typePercents[13] > 0 && tileArray[x, z].habitats.gameCurrentLevel > 0 && tileArray[x, z].terrain.elevation < 2.5)
+                        {
+							Assert.Greater(game["fish"], 0.0, "the ocean value is " + tileArray[x, z].habitats.typePercents[13] + " - elevation: " + tileArray[x, z].terrain.elevation);
+                        }
+                        foreach(KeyValuePair<string,Animal> pair in World.animalSpecies)
+						{
+							// if animal habitat is found expect it in the list
+							for (int i = 0; i < tileArray[x, z].habitats.typePercents.Length - 2; i++)
+							{
+								if (tileArray[x, z].habitats.typePercents[i] > 0 && pair.Value.formsHerds == null)
+								{
+									// should be any habitat > 0 not this habitat
+									bool validHabitat = pair.Value.habitats.Contains("All") || pair.Value.habitats.Contains(Habitats.habitatMapping[i]);
+                                    if(validHabitat)
+									{
+										Assert.True(game.ContainsKey(pair.Key), validHabitat + " the habitat (" + Habitats.habitatMapping[i] + ") is valid, and the key is " + pair.Key);
+									}                           
+								}                        
+							}
+							// expect no herd animals on the list
+							if (pair.Value.formsHerds != null)
+							{
+								Assert.False(game.ContainsKey(pair.Key));  
+							}            
+						}
+					}
                 }
             }
         }

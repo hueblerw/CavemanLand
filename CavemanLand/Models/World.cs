@@ -617,11 +617,11 @@ namespace CavemanLand.Models
 					tileArray[x, z].precipitation.setDailyRain(new DailyRain(year, rain, snowF, snowC));
 					tileArray[x, z].rivers.dailyVolume = new DailyVolume(year, volume);
 					// HABITAT UPDATE
-					double avgTemp = tileArray[x, z].temperatures.dailyTemps.getAvgTemp();
+					int[] temps = tileArray[x, z].temperatures.dailyTemps.days;
 					double totalPrecipitation = tileArray[x, z].precipitation.getRainForYear();
 					double avgRiverLevel = tileArray[x, z].rivers.dailyVolume.getAverageWaterLevel();
 					double oceanPer = tileArray[x, z].terrain.oceanPercent;
-					tileArray[x, z].habitats.growHabitats(avgTemp, totalPrecipitation, avgRiverLevel, oceanPer.Equals(1.0), determineIsIceSheet(snowC));
+					tileArray[x, z].habitats.growHabitats(temps, totalPrecipitation, avgRiverLevel, oceanPer.Equals(1.0), determineIsIceSheet(snowC));
 				}
 			}
 		}

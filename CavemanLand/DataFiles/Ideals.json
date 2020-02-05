@@ -1,7 +1,7 @@
 {
 	// Artic
 	"Artic Desert": {
-		"avgTemp": 42.5,
+		"coldDays": 42.5,
 		"tempPlusMinus": 10.0,
 		"rain": 12.5,
 		"rainPlusMinus": 7.5

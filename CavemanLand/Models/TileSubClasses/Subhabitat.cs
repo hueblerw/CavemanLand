@@ -42,7 +42,7 @@ namespace CavemanLand.Models.TileSubClasses
             double tempfactor = Math.Max((1.2 - Math.Abs(70.0 - temp) / 70.0), 0.0);
             // Calculate the grass
             double grass = 0.0;
-			double qualityfactor = ((quality - 5.0) / 20.0 + 0.1);
+			double qualityfactor = ((quality - 5.0) / 20.0 + 1.0);
 			grass += tempfactor * 400 * plainsPercentage * qualityfactor;
             grass += tempfactor * 400 * desertPercentage * qualityfactor * DESERTGROWTHFACTOR * (.5 + (last5Rain / 10.0));
 			return Math.Round(grass, World.ROUND_TO);
