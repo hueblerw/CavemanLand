@@ -34,6 +34,8 @@ habitats
 rivers
 water
 mouseover displays tile info
+2D tile map version? - I think so I don't have a solution yet for 3D rivers.
+Create a Basic Editor Interface - displaying tileInfo and other dev useful info
 images for all tiles
 images for all crops
 images for all animals
@@ -43,13 +45,17 @@ Add functions to fetch on request:
 - gatherables - DONE
 - game - DONE
 Create a function to return a dictionary of tile info for the UI.
-Make the print function print ITS contents
+Make the print function print ITS contents - WAIT TILL I MAKE A UI
 Correctly implement temperature in habitats - https://github.com/hueblerw/CavemanWorld/blob/master/DynamicCavemanWorld/Assets/Classes/Habitat.cs#L171-L189 - DONE!
 
 Generate Minerals
 Generate Herds
+	- Add Speed to all animals
+	- Create Herd Object
+	- Build Herd Functions
+	- Add Herds AI
+	- Spawn a Single Herd and see what it does with time
 Generate Monsters
-Add Herds AI
 Building Tile
 Natural Shleters
 

@@ -5,6 +5,8 @@ namespace CavemanLand.Models.TileSubClasses
     public class SubHabitat
     {
 		// Constants
+		private const double GRASS_PER_TILE_CONSTANT = 0.4;
+
 		private const double SWAMP_CONSTANT = .8;
 		private const double DESERTGROWTHFACTOR = .3;
 		private const double GRASSCALORIECONTENT = .067311605;
@@ -43,8 +45,8 @@ namespace CavemanLand.Models.TileSubClasses
             // Calculate the grass
             double grass = 0.0;
 			double qualityfactor = ((quality - 5.0) / 20.0 + 1.0);
-			grass += tempfactor * 400 * plainsPercentage * qualityfactor;
-            grass += tempfactor * 400 * desertPercentage * qualityfactor * DESERTGROWTHFACTOR * (.5 + (last5Rain / 10.0));
+			grass += tempfactor * 400 * plainsPercentage * qualityfactor * GRASS_PER_TILE_CONSTANT;
+			grass += tempfactor * 400 * desertPercentage * qualityfactor * DESERTGROWTHFACTOR * (.5 + (last5Rain / 10.0)) * GRASS_PER_TILE_CONSTANT;
 			return Math.Round(grass, World.ROUND_TO);
         }
 

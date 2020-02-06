@@ -12,6 +12,8 @@ namespace CavemanLand.Models.GenericModels
 		public double foodEaten;
 		public int defense;
 		public int attack;
+		public int speed;
+		public int sneak;
 		public int[] temperatureTolerance = new int[2];
 		public double foodPerAnimal;
 		public double weightPerUnit;
