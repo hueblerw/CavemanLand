@@ -18,6 +18,7 @@ namespace CavemanLand.Models.TileSubClasses
 		private const double QUALITY_MIN = 0.0;
 		private const double QUALITY_MAX = 10.0;
 		private const double MAX_ELE_WITH_COAST_FISH = 2.5;
+		private const double GAME_CAUGHT_MULTIPLIER = 0.25;
         
 		public int[] typePercents;
 		public double currentLevel;
@@ -230,7 +231,7 @@ namespace CavemanLand.Models.TileSubClasses
 			}
 			gamePresent = calculateAnimalNumbers("fish", fishMeat, gamePresent, carnivoreMeat, out carnivoreMeat);
 			// meat eaters
-			gamePresent = calculateAnimalNumbers("meat", (1.0 + gameCurrentLevel / QUALITY_MAX) * (availableGameMeat / WorldDate.DAYS_PER_YEAR), gamePresent, carnivoreMeat, out carnivoreMeat);
+			gamePresent = calculateAnimalNumbers("meat", (1.0 + gameCurrentLevel / QUALITY_MAX) * (availableGameMeat / WorldDate.DAYS_PER_YEAR) * GAME_CAUGHT_MULTIPLIER, gamePresent, carnivoreMeat, out carnivoreMeat);
 			return gamePresent;
         }
 

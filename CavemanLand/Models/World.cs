@@ -231,8 +231,7 @@ namespace CavemanLand.Models
 			double[,] variances = generateVariance();
 			double[][,] humidities = generateHumidities();
 			double[,] flowRates;
-			Direction.CardinalDirections[,] downstreamDirections = calculateDownStreams(elevations, out flowRates);
-            // Generate Mineral Layers
+			Direction.CardinalDirections[,] downstreamDirections = calculateDownStreams(elevations, out flowRates);         
 
 			// Populate layers
 			for (int x = 0; x < this.x; x++)
@@ -241,13 +240,14 @@ namespace CavemanLand.Models
 				{
 					tiles[x, z] = new Tile(x, z);
 					double oceanPer = calculateOceanPercentage(tiles[x, z].coor, elevations);
-					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer));
+					double hillPer = calculateHillPercentage(tiles[x, z].coor, elevations, oceanPer);
+					tiles[x, z].terrain = new Terrain(elevations[x, z], oceanPer, hillPer);
 					tiles[x, z].temperatures = new Temperatures(lowTemps[x, z], highTemps[x, z], summerLengths[x, z], variances[x, z]);
 					tiles[x, z].precipitation = new Precipitation(convertThisTilesHumiditiesToArray(x, z, humidities));
 					List<Direction.CardinalDirections> upstreamDirections = getUpstreamFromDownstream(x, z, downstreamDirections);
 					tiles[x, z].rivers = new Rivers(downstreamDirections[x, z], upstreamDirections, flowRates[x, z]);
 					tiles[x, z].habitats = new Habitats(oceanPer);
-                    // Then Minerals
+					tiles[x, z].minerals = new Minerals(oceanPer, hillPer);
 				}
 			}
             

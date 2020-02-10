@@ -5,6 +5,7 @@ namespace CavemanLand.Models.GenericModels
     public class Animal
     {
 		public string name;
+		public int maxAge;
 		public int[] formsHerds = new int[2];
 		public List<string> habitats;
 		public List<int> abundance;

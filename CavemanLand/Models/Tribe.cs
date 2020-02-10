@@ -3,7 +3,7 @@ using CavemanLand.Utility;
 
 namespace CavemanLand.Models
 {
-    public class Tribe
+	public class Tribe : Herd
     {
 		public List<int> pops;
 		public Coordinates location;

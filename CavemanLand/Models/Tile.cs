@@ -21,7 +21,7 @@ namespace CavemanLand.Models
         }
 
 		public string getTileInfo(int day){
-			string output = coor.ToString();
+			string output = "\n" + coor.ToString();
 			output += "\n" + terrain;
 			output += "\nTemperature: " + temperatures.dailyTemps.days[day];
 			output += "\nRainfall: " + precipitation.dailyRain.precip[day];
@@ -33,13 +33,13 @@ namespace CavemanLand.Models
 			output += "\n" + printDictionary("Vegetation", vegetation);
 			output += "\n" + printDictionary("Gatherables", getTodaysGatherables(day));
 			// temporary!!!
-			output += "\n" + printDictionary("Full Year Of Gatherables", getTotalGatherablesForYear());
+			output += printDictionary("Full Year Of Gatherables", getTotalGatherablesForYear());
 			double riverLevel = 0.0;
             if (!rivers.dailyVolume.doesItDryOut())
 			{
 				riverLevel = rivers.dailyVolume.getAverageWaterLevel();
 			}
-			output += "\n" + printDictionary("Game", habitats.getGame(vegetation, terrain.elevation, riverLevel));
+			output += printDictionary("Game", habitats.getGame(vegetation, terrain.elevation, riverLevel));
 			output += "\n" + minerals;
 			return output;
 		}
